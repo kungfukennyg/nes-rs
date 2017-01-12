@@ -1,0 +1,6 @@
+[package]
+name = "nes-rs"
+version = "0.1.0"
+authors = ["Kenny <kennethbgoodin@gmail.com>"]
+
+[dependencies]
