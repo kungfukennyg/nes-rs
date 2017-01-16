@@ -56,7 +56,8 @@ impl<'a> Cpu<'a> {
                     address = self.zero_page_address();
                 },
                 0x02 => {
-                    
+                    cycles = 2;
+                    address = self.immediate_address();
                 }
             }
         }
@@ -79,6 +80,12 @@ impl<'a> Cpu<'a> {
         let result = self.memory.fetch(self.registers.program_counter) as u16;
         self.registers.program_counter += 1;
 
+        result
+    }
+
+    fn immediate_address(&mut self) -> u16 {
+        let result = self.registers.program_counter;
+        self.registers.program_counter += 1;
         result
     }
 }
