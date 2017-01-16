@@ -41,6 +41,32 @@ impl<'a> Cpu<'a> {
     pub fn lda(&mut self, address: u16) {
 
     }
+
+    pub fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
+        let cycles: u8;
+        let address: u16;
+        if opcode & 0x10 == 0 {
+            match (opcode >> 2) & 0x03 {
+                0x00 => {
+                    cycles = 6;
+                    address = self.indexed_indirect_address();
+                },
+            }
+        }
+
+        (address, cycles)
+    }
+
+    fn indexed_indirect_address(&mut self) -> u16 {
+        let value = self.memory.fetch(self.registers.program_counter);
+        let address = (value + self.registers.index_register_y) as u16;
+        self.registers.program_counter += 1;
+
+        let low = self.memory.fetch(address);
+        let high = self.memory.fetch((address + 1) & 0x00FF);
+
+        ((high as u16) << 8) | (low as u16)
+    }
 }
 
 #[derive(Default, Debug)]
