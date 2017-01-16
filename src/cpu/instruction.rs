@@ -29,7 +29,7 @@ impl<'a> InstructionTable<'a> {
 
             let mut instruction = Instruction::new("LDA".to_string(), opcode);
 
-            instruction.set(move |cpu| {
+            instruction.set(|cpu| {
                 println!("test LDA");
                 1
             });

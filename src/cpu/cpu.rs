@@ -34,13 +34,24 @@ impl<'a> Cpu<'a> {
         println!("{:?}", opcode);
     }
 
-    pub fn load(&self, address: u16, register: u8) {
+    // load byte from memory at given address, setting zero and negative flags as appropriate
+    pub fn load(&self, address: u16) -> u8 {
+        let result = self.memory.fetch(address);
+        self.registers.processor_status.set_negative(result);
+        self.registers.processor_status.set_zero(result);
 
+        result
     }
 
+    // Instructions
+
+    // Load byte into accumulator register from memory
     pub fn lda(&mut self, address: u16) {
-
+        let result = self.load(address, &mut self.registers.accumulator);
+        self.registers.accumulator = result;
     }
+
+    // Addressing modes
 
     pub fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
         let mut cycles: u8;
@@ -80,6 +91,12 @@ impl<'a> Cpu<'a> {
                 0x02 => {
                     cycles = 4;
                     let result = self.absolute_indexed_address(Index::Y);
+                    address = result.0;
+                    cycles += result.1;
+                },
+                0x03 => {
+                    cycles = 4;
+                    let result = self.absolute_indexed_address(Index::X);
                     address = result.0;
                     cycles += result.1;
                 }
@@ -149,6 +166,9 @@ impl<'a> Cpu<'a> {
         result
     }
 
+    // Add the contents of the register pertaining to index to an absolute address Indexed
+    // addressing modes use the X or Y register as an offset to the address being accessed.
+    // Returns the result address and the number of cycles this operation would take.
     fn absolute_indexed_address(&mut self, index: Index) -> (u16, u8) {
         let low = self.memory.fetch(self.registers.program_counter);
         let high = self.memory.fetch(self.registers.program_counter + 1);
