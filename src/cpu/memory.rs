@@ -1,3 +1,5 @@
+use std::fmt;
+
 const DEFAULT_MEMORY_SIZE: u32 = 65536;
 
 pub trait Memory {
@@ -8,6 +10,14 @@ pub trait Memory {
 
 pub struct NesMemory {
     memory: [u8; DEFAULT_MEMORY_SIZE as usize]
+}
+
+impl NesMemory {
+    pub fn new() -> Self {
+        NesMemory {
+            memory: [0; DEFAULT_MEMORY_SIZE as usize]
+        }
+    }
 }
 
 impl Memory for NesMemory {
@@ -28,5 +38,11 @@ impl Memory for NesMemory {
         let old = self.fetch(address);
         self.memory[address as usize] = value;
         old
+    }
+}
+
+impl fmt::Debug for NesMemory {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "TODO nes memory fmt")
     }
 }

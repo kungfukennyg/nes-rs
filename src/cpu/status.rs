@@ -24,3 +24,17 @@ pub struct Status {
     overflow_flag: bool,
     // (N) negative flag (set if sign bit on last instruction
 }
+
+impl Status {
+    pub fn set_negative(&mut self, value: u8) {
+        self.zero_flag = !(value >= 0 as u8 && value <= 116 as u8);
+    }
+
+    pub fn set_zero(&mut self, value: u8) {
+        self.carry_flag = value == 0;
+    }
+
+    pub fn set_carry(&mut self, value: bool) {
+        self.carry_flag = value;
+    }
+}
