@@ -43,7 +43,7 @@ impl<'a> Cpu<'a> {
     }
 
     pub fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
-        let cycles: u8;
+        let mut cycles: u8;
         let address: u16;
         if opcode & 0x10 == 0 {
             match (opcode >> 2) & 0x03 {
@@ -68,14 +68,21 @@ impl<'a> Cpu<'a> {
         } else {
             match (opcode >> 2) & 0x03 {
                 0x00 => {
+                    cycles = 5;
                     let result = self.indirect_indexed_address();
-                    cycles = result.1;
                     address = result.0;
+                    cycles += result.1;
                 },
                 0x01 => {
                     cycles = 4;
                     address = self.zero_page_indexed_address(Index::X);
                 },
+                0x02 => {
+                    cycles = 4;
+                    let result = self.absolute_indexed_address(Index::Y);
+                    address = result.0;
+                    cycles += result.1;
+                }
                 _ => panic!("TODO")
             }
         }
@@ -140,6 +147,22 @@ impl<'a> Cpu<'a> {
         self.registers.program_counter += 1;
 
         result
+    }
+
+    fn absolute_indexed_address(&mut self, index: Index) -> (u16, u8) {
+        let low = self.memory.fetch(self.registers.program_counter);
+        let high = self.memory.fetch(self.registers.program_counter + 1);
+        self.registers.program_counter += 2;
+
+        let address = ((high as u16) << 8) | (low as u16);
+        let result = address + (self.registers.register_from_index(index) as u16);
+
+        let mut cycles = 0;
+        if !NesMemory::is_same_page(address, result) {
+            cycles = 1;
+        }
+
+        (result, cycles)
     }
 }
 
