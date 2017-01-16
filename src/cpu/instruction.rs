@@ -30,7 +30,8 @@ impl<'a> InstructionTable<'a> {
             let mut instruction = Instruction::new("LDA".to_string(), opcode);
 
             instruction.set(move |cpu| {
-                println!("test LDA")
+                println!("test LDA");
+                1
             });
 
             self.instructions.insert(opcode, instruction);
@@ -47,7 +48,7 @@ impl<'a> fmt::Debug for InstructionTable<'a> {
 pub struct Instruction<'a> {
     name: String,
     opcode: u8,
-    function: Option<Box<FnMut(&Cpu) + 'a>>
+    function: Option<Box<FnMut(&Cpu) -> u8 + 'a>>
 }
 
 impl<'a> Instruction<'a> {
@@ -59,14 +60,14 @@ impl<'a> Instruction<'a> {
         }
     }
 
-    fn set<T: FnMut(&Cpu) + 'a>(&mut self, f: T) {
+    fn set<T: FnMut(&Cpu) -> u8 + 'a>(&mut self, f: T) {
         self.function = Some(Box::new(f));
     }
 
-    pub fn execute(&mut self, cpu: &Cpu) {
+    pub fn execute(&mut self, cpu: &Cpu) -> u8 {
         match self.function {
             Some(ref mut function) => (function)(cpu),
-            None => ()
-        };
+            None => 0
+        }
     }
 }
