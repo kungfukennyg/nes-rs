@@ -51,6 +51,13 @@ impl<'a> Cpu<'a> {
                     cycles = 6;
                     address = self.indexed_indirect_address();
                 },
+                0x01 => {
+                    cycles = 5;
+                    address = self.zero_page_address();
+                },
+                0x02 => {
+                    
+                }
             }
         }
 
@@ -66,6 +73,13 @@ impl<'a> Cpu<'a> {
         let high = self.memory.fetch((address + 1) & 0x00FF);
 
         ((high as u16) << 8) | (low as u16)
+    }
+
+    fn zero_page_address(&mut self) -> u16 {
+        let result = self.memory.fetch(self.registers.program_counter) as u16;
+        self.registers.program_counter += 1;
+
+        result
     }
 }
 
