@@ -62,7 +62,8 @@ impl<'a> Cpu<'a> {
                 0x03 => {
                     cycles = 4;
                     address = self.absolute_address();
-                }
+                },
+                _ => panic!("TODO")
             }
         } else {
             match (opcode >> 2) & 0x03 {
@@ -70,7 +71,12 @@ impl<'a> Cpu<'a> {
                     let result = self.indirect_indexed_address();
                     cycles = result.1;
                     address = result.0;
-                }
+                },
+                0x01 => {
+                    cycles = 4;
+                    address = self.zero_page_indexed_address(Index::X);
+                },
+                _ => panic!("TODO")
             }
         }
 
@@ -89,7 +95,7 @@ impl<'a> Cpu<'a> {
     }
 
     fn indirect_indexed_address(&mut self) -> (u16, u8) {
-        let address = self.memory.fetch(self.registers.program_counter) as u16;
+        let mut address = self.memory.fetch(self.registers.program_counter) as u16;
         self.registers.program_counter += 1;
 
         let low = self.memory.fetch(address);
@@ -98,7 +104,7 @@ impl<'a> Cpu<'a> {
         address = ((high as u16) << 8) | (low as u16);
 
         let result = address + (self.registers.index_register_y as u16);
-        let cycles = 0;
+        let mut cycles = 0;
 
         if !NesMemory::is_same_page(address, result) {
             cycles += 1;
@@ -127,6 +133,14 @@ impl<'a> Cpu<'a> {
 
         ((high as u16) << 8) | (low as u16)
     }
+
+    fn zero_page_indexed_address(&mut self, index: Index) -> u16 {
+        let value = self.memory.fetch(self.registers.program_counter);
+        let result = (value + self.registers.register_from_index(index)) as u16;
+        self.registers.program_counter += 1;
+
+        result
+    }
 }
 
 #[derive(Default, Debug)]
@@ -143,4 +157,19 @@ struct Registers {
     // (P) processor status (indicate results of last arithmetic and logic instructions,
     // indicates break/interrupts)
     processor_status: Status
+}
+
+impl Registers {
+    fn register_from_index(&self, index: Index) -> u8 {
+        match index {
+            Index::X => self.index_register_x,
+            Index::Y => self.index_register_y
+        }
+    }
+}
+
+#[derive(Debug)]
+enum Index {
+    X,
+    Y
 }
