@@ -58,6 +58,10 @@ impl<'a> Cpu<'a> {
                 0x02 => {
                     cycles = 2;
                     address = self.immediate_address();
+                },
+                0x03 => {
+                    cycles = 4;
+                    address = self.absolute_address();
                 }
             }
         }
@@ -87,6 +91,14 @@ impl<'a> Cpu<'a> {
         let result = self.registers.program_counter;
         self.registers.program_counter += 1;
         result
+    }
+
+    fn absolute_address(&mut self) -> u16 {
+        let low = self.memory.fetch(self.registers.program_counter);
+        let high = self.memory.fetch(self.registers.program_counter + 1);
+        self.registers.program_counter += 2;
+
+        ((high as u16) << 8) | (low as u16)
     }
 }
 
