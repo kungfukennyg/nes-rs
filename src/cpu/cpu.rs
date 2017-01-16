@@ -64,6 +64,14 @@ impl<'a> Cpu<'a> {
                     address = self.absolute_address();
                 }
             }
+        } else {
+            match (opcode >> 2) & 0x03 {
+                0x00 => {
+                    let result = self.indirect_indexed_address();
+                    cycles = result.1;
+                    address = result.0;
+                }
+            }
         }
 
         (address, cycles)
@@ -75,9 +83,28 @@ impl<'a> Cpu<'a> {
         self.registers.program_counter += 1;
 
         let low = self.memory.fetch(address);
-        let high = self.memory.fetch((address + 1) & 0x00FF);
+        let high = self.memory.fetch((address + 1) & 0x00ff);
 
         ((high as u16) << 8) | (low as u16)
+    }
+
+    fn indirect_indexed_address(&mut self) -> (u16, u8) {
+        let address = self.memory.fetch(self.registers.program_counter) as u16;
+        self.registers.program_counter += 1;
+
+        let low = self.memory.fetch(address);
+        let high = self.memory.fetch((address + 1) & 0x00ff);
+
+        address = ((high as u16) << 8) | (low as u16);
+
+        let result = address + (self.registers.index_register_y as u16);
+        let cycles = 0;
+
+        if !NesMemory::is_same_page(address, result) {
+            cycles += 1;
+        }
+
+        (result, cycles)
     }
 
     fn zero_page_address(&mut self) -> u16 {

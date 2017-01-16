@@ -6,6 +6,7 @@ pub trait Memory {
     fn reset(&mut self);
     fn fetch(&self, address: u16) -> u8;
     fn store(&mut self, address: u16, value: u8) -> u8;
+    fn is_same_page(address1: u16, address2: u16) -> bool;
 }
 
 pub struct NesMemory {
@@ -38,6 +39,11 @@ impl Memory for NesMemory {
         let old = self.fetch(address);
         self.memory[address as usize] = value;
         old
+    }
+
+    // returns true if two addresses higher bits are the same
+    fn is_same_page(address1: u16, address2: u16) -> bool {
+        (address1 ^ address2) >> 8 == 0
     }
 }
 
