@@ -47,7 +47,7 @@ impl<'a> Cpu<'a> {
 
     // Load byte into accumulator register from memory
     pub fn lda(&mut self, address: u16) {
-        let result = self.load(address, &mut self.registers.accumulator);
+        let result = self.load(address);
         self.registers.accumulator = result;
     }
 
@@ -150,6 +150,8 @@ impl<'a> Cpu<'a> {
         result
     }
 
+    // Retrieves two bytes of memory, and increments the program counter twice. Returns the
+    // value interpreted as little endian
     fn absolute_address(&mut self) -> u16 {
         let low = self.memory.fetch(self.registers.program_counter);
         let high = self.memory.fetch(self.registers.program_counter + 1);
@@ -158,6 +160,9 @@ impl<'a> Cpu<'a> {
         ((high as u16) << 8) | (low as u16)
     }
 
+    // Adds the contents of the register pertaining to the supplied index to the address
+    // in the program counter, effectively using the supplied index register as an offset.
+    // Increments the program counter and returns the resulting address.
     fn zero_page_indexed_address(&mut self, index: Index) -> u16 {
         let value = self.memory.fetch(self.registers.program_counter);
         let result = (value + self.registers.register_from_index(index)) as u16;
@@ -166,9 +171,9 @@ impl<'a> Cpu<'a> {
         result
     }
 
-    // Add the contents of the register pertaining to index to an absolute address Indexed
-    // addressing modes use the X or Y register as an offset to the address being accessed.
-    // Returns the result address and the number of cycles this operation would take.
+    // Add the contents of the register pertaining to index to an absolute address, effectively
+    // using the supplied index register as an offset. Also increments the program counter.
+    // Returns the resulting address and the number of cycles this operation should take.
     fn absolute_indexed_address(&mut self, index: Index) -> (u16, u8) {
         let low = self.memory.fetch(self.registers.program_counter);
         let high = self.memory.fetch(self.registers.program_counter + 1);
