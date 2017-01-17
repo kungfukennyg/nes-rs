@@ -2,40 +2,159 @@ use super::status::Status;
 use super::memory;
 use super::memory::Memory;
 use super::memory::NesMemory;
-use super::instruction::InstructionTable;
-use super::instruction::Instruction;
 use std::cell::RefCell;
 
+static CYCLE_TABLE: [u8; 256] = [
+    /*0x00*/ 7,6,2,8,3,3,5,5,3,2,2,2,4,4,6,6,
+    /*0x10*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
+    /*0x20*/ 6,6,2,8,3,3,5,5,4,2,2,2,4,4,6,6,
+    /*0x30*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
+    /*0x40*/ 6,6,2,8,3,3,5,5,3,2,2,2,3,4,6,6,
+    /*0x50*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
+    /*0x60*/ 6,6,2,8,3,3,5,5,4,2,2,2,5,4,6,6,
+    /*0x70*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
+    /*0x80*/ 2,6,2,6,3,3,3,3,2,2,2,2,4,4,4,4,
+    /*0x90*/ 2,6,2,6,4,4,4,4,2,5,2,5,5,5,5,5,
+    /*0xA0*/ 2,6,2,6,3,3,3,3,2,2,2,2,4,4,4,4,
+    /*0xB0*/ 2,5,2,5,4,4,4,4,2,4,2,4,4,4,4,4,
+    /*0xC0*/ 2,6,2,8,3,3,5,5,2,2,2,2,4,4,6,6,
+    /*0xD0*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
+    /*0xE0*/ 2,6,3,8,3,3,5,5,2,2,2,2,4,4,6,6,
+    /*0xF0*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
+];
+
 #[derive(Debug)]
-pub struct Cpu<'a> {
+pub struct Cpu {
     registers: Registers,
-    memory: NesMemory,
-    instruction_table: RefCell<InstructionTable<'a>>
+    memory: NesMemory
 }
 
-impl<'a> Cpu<'a> {
+impl Cpu {
     pub fn new() -> Self {
         Cpu {
             registers: Registers::default(),
-            memory: NesMemory::new(),
-            instruction_table: RefCell::new(InstructionTable::new())
+            memory: NesMemory::new()
         }
-    }
-
-    pub fn run(&self) {
-        let instruction = self.instruction_table.borrow_mut().exec_instruction(0xa1, self);
-
     }
 
     pub fn execute_instruction(&mut self, value: u8) {
         let instruction = self.memory.fetch(self.registers.program_counter);
         let opcode = instruction >> 6;
+        let mut cycles = 0;
 
-        println!("{:?}", opcode);
+        match opcode {
+
+            // Loading
+
+            // LDA
+            0xa1 => {
+                let result = self.alu_address(opcode);
+                self.lda(result.0);
+                cycles = result.1;
+            },
+            0xa5 => {
+                let result = self.alu_address(opcode);
+                self.lda(result.0);
+                cycles = result.1;
+            },
+            0xa9 => {
+                let result = self.alu_address(opcode);
+                self.lda(result.0);
+                cycles = result.1;
+            },
+            0xad => {
+                let result = self.alu_address(opcode);
+                self.lda(result.0);
+                cycles = result.1;
+            },
+            0xb1 => {
+                let result = self.alu_address(opcode);
+                self.lda(result.0);
+                cycles = result.1;
+            },
+            0xb5 => {
+                let result = self.alu_address(opcode);
+                self.lda(result.0);
+                cycles = result.1;
+            },
+            0xb9 => {
+                let result = self.alu_address(opcode);
+                self.lda(result.0);
+                cycles = result.1;
+            },
+            0xbd => {
+                let result = self.alu_address(opcode);
+                self.lda(result.0);
+                cycles = result.1;
+            },
+
+            // LDX
+            0xa2 => {
+                let result = self.rmw_address(opcode);
+                self.ldx(result.0);
+                cycles = result.1;
+            },
+            0xa6 => {
+                let result = self.rmw_address(opcode);
+                self.ldx(result.0);
+                cycles = result.1;
+            },
+            0xae => {
+                let result = self.rmw_address(opcode);
+                self.ldx(result.0);
+                cycles = result.1;
+            },
+            0xb2 => {
+                let result = self.rmw_address(opcode);
+                self.ldx(result.0);
+                cycles = result.1;
+            },
+            0xb6 => {
+                let result = self.rmw_address(opcode);
+                self.ldx(result.0);
+                cycles = result.1;
+            },
+            0xbe => {
+                let result = self.rmw_address(opcode);
+                self.ldx(result.0);
+                cycles = result.1;
+            },
+
+            // LDY
+            0xa0 => {
+                let result = self.control_address(opcode);
+                self.ldy(result.0);
+                cycles = result.1;
+            },
+            0xa4 => {
+                let result = self.control_address(opcode);
+                self.ldy(result.0);
+                cycles = result.1;
+            },
+            0xac => {
+                let result = self.control_address(opcode);
+                self.ldy(result.0);
+                cycles = result.1;
+            },
+            0xb4 => {
+                let result = self.control_address(opcode);
+                self.ldy(result.0);
+                cycles = result.1;
+            },
+            0xbc => {
+                let result = self.control_address(opcode);
+                self.ldy(result.0);
+                cycles = result.1;
+            },
+
+            _ => panic!("Unrecognized opcode {:#x}", opcode)
+        }
+
+        cycles += CYCLE_TABLE[opcode as usize];
     }
 
     // load byte from memory at given address, setting zero and negative flags as appropriate
-    pub fn load(&self, address: u16) -> u8 {
+    fn load(&mut self, address: u16) -> u8 {
         let result = self.memory.fetch(address);
         self.registers.processor_status.set_negative(result);
         self.registers.processor_status.set_zero(result);
@@ -46,14 +165,24 @@ impl<'a> Cpu<'a> {
     // Instructions
 
     // Load byte into accumulator register from memory
-    pub fn lda(&mut self, address: u16) {
+    fn lda(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.accumulator = result;
     }
 
+    fn ldx(&mut self, address: u16) {
+        let result = self.load(address);
+        self.registers.index_register_y = result;
+    }
+
+    fn ldy(&mut self, address: u16) {
+        let result = self.load(address);
+        self.registers.index_register_y = result;
+    }
+
     // Addressing modes
 
-    pub fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
+    fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
         let mut cycles: u8;
         let address: u16;
         if opcode & 0x10 == 0 {
@@ -105,6 +234,117 @@ impl<'a> Cpu<'a> {
         }
 
         (address, cycles)
+    }
+
+    fn rmw_address(&mut self, opcode :u8) -> (u16, u8) {
+        let mut cycles = 0;
+        let address;
+
+        if opcode & 0x10 == 0 {
+            match (opcode >> 2) & 0x03 {
+                0x00 => {
+                    cycles = 2;
+                    address = self.immediate_address();
+                },
+                0x01 => {
+                    cycles = 3;
+                    address = self.zero_page_address();
+                },
+                0x02 => {
+                    cycles = 2;
+                    address = 0; // not used
+                },
+                0x03 => {
+                    cycles = 4;
+                    address = self.absolute_address();
+                }
+            }
+        } else {
+            let index: Index;
+            match (opcode >> 2) & 0x03 {
+                0x00 => {
+                    cycles = 2;
+                    address = 0; // not used
+
+                },
+                0x01 => {
+                    cycles = 4;
+
+                    match opcode & 0xf0 {
+                        0x90 => index = Index::Y,
+                        0xb0 => index = Index::Y,
+                        _ => index = Index::X
+                    }
+
+                    address = self.zero_page_indexed_address(index);
+                },
+                0x02 => {
+                    cycles = 2;
+                    address = 0; // not used
+                },
+                0x03 => {
+                    cycles = 4;
+
+                    match opcode & 0xf0 {
+                        0x90 => index = Index::Y,
+                        0xb0 => index = Index::Y,
+                        _ => index = Index::X,
+                    }
+
+                    address = self.absolute_indexed_address(index);
+                }
+            }
+        }
+
+        (address, cycles)
+    }
+
+    fn control_address(&mut self, opcode: u8) -> (u16, u8) {
+        let mut cycles = 0;
+        let address;
+        if opcode & 0x10 == 0 {
+            match (opcode >> 2) & 0x03 {
+                0x00 => {
+                    cycles = 2;
+                    address = self.immediate_address();
+                },
+                0x01 => {
+                    cycles = 3;
+                    address = self.zero_page_address();
+                },
+                0x02 => {
+                    cycles = 4;
+                    address = 0; // not used
+                },
+                0x03 => {
+                    cycles = 4;
+                    address = self.absolute_address();
+                }
+            }
+        }
+        else
+        {
+            match (opcode >> 2) & 0x03 {
+                0x00 => {
+                    cycles = 2;
+                    address = self.relative_address();
+                },
+                0x01 => {
+                    cycles = 4;
+                    address = self.zero_page_indexed_address(Index::X);
+                },
+                0x02 => {
+                    cycles = 2;
+                    address = 0; // not used
+                },
+                0x03 => {
+                    cycles = 4;
+                    let result = self.absolute_indexed_address(Index::X);
+                    address = result.0;
+                    cycles += result.1;
+                }
+            }
+        }
     }
 
     fn indexed_indirect_address(&mut self) -> u16 {
@@ -188,6 +428,19 @@ impl<'a> Cpu<'a> {
         }
 
         (result, cycles)
+    }
+
+    fn relative_address(&mut self) -> u16 {
+        let value = self.memory.fetch(self.registers.program_counter) as u16;
+        self.registers.program_counter += 1;
+        let offset = if value > 0x7f {
+            -(0x0100 - value)
+        } else {
+            value
+        };
+
+        let result = self.registers.program_counter + offset;
+        result
     }
 }
 

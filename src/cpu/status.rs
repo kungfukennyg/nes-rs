@@ -28,7 +28,7 @@ pub struct Status {
 impl Status {
 
     pub fn set_negative(&mut self, value: u8) {
-        self.zero_flag = (value >> 8) == 0;
+        self.zero_flag = (value & 0x80) == 0;
     }
 
     pub fn set_zero(&mut self, value: u8) {
