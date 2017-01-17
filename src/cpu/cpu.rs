@@ -184,6 +184,40 @@ impl Cpu {
                 cycles = result.1;
             },
 
+            // STX
+            0x86 => {
+                let result = self.rmw_address(opcode);
+                self.stx(result.0);
+                cycles = result.1;
+            },
+            0x8e => {
+                let result = self.rmw_address(opcode);
+                self.stx(result.0);
+                cycles = result.1;
+            },
+            0x96 => {
+                let result = self.rmw_address(opcode);
+                self.stx(result.0);
+                cycles = result.1;
+            },
+
+            // STY
+            0x84 => {
+                let result = self.control_address(opcode);
+                self.sty(result.0);
+                cycles = result.1;
+            },
+            0x8c => {
+                let result = self.control_address(opcode);
+                self.sty(result.0);
+                cycles = result.1;
+            },
+            0x94 => {
+                let result = self.control_address(opcode);
+                self.sty(result.0);
+                cycles = result.1;
+            },
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -226,6 +260,16 @@ impl Cpu {
     // Store byte in memory from accumulator
     fn sta(&mut self, address: u16) {
         self.store(address, self.registers.accumulator);
+    }
+
+    // Store byte in memory from index x register
+    fn stx(&mut self, address: u16) {
+        self.store(address, self.registers.index_register_x);
+    }
+
+    // Store byte in memory from index y register
+    fn sty(&mut self, address: u16) {
+        self.store(address, self.registers.index_register_y);
     }
 
     // Addressing modes
