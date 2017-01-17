@@ -147,6 +147,43 @@ impl Cpu {
                 cycles = result.1;
             },
 
+            // STA
+            0x81 => {
+                let result = self.alu_address(opcode);
+                self.sta(result.0);
+                cycles = result.1;
+            },
+            0x85 => {
+                let result = self.alu_address(opcode);
+                self.sta(result.0);
+                cycles = result.1;
+            },
+            0x84 => {
+                let result = self.alu_address(opcode);
+                self.sta(result.0);
+                cycles = result.1;
+            },
+            0x91 => {
+                let result = self.alu_address(opcode);
+                self.sta(result.0);
+                cycles = result.1;
+            },
+            0x95 => {
+                let result = self.alu_address(opcode);
+                self.sta(result.0);
+                cycles = result.1;
+            },
+            0x99 => {
+                let result = self.alu_address(opcode);
+                self.sta(result.0);
+                cycles = result.1;
+            },
+            0x9d => {
+                let result = self.alu_address(opcode);
+                self.sta(result.0);
+                cycles = result.1;
+            },
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -162,6 +199,10 @@ impl Cpu {
         result
     }
 
+    fn store(&mut self, address: u16, value: u8) {
+        self.memory.store(address, value);
+    }
+
     // Instructions
 
     // Load byte into accumulator register from memory
@@ -170,14 +211,21 @@ impl Cpu {
         self.registers.accumulator = result;
     }
 
+    // Load byte into index x register from memory
     fn ldx(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.index_register_y = result;
     }
 
+    // Load byte into index y register from memory
     fn ldy(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.index_register_y = result;
+    }
+
+    // Store byte in memory from accumulator
+    fn sta(&mut self, address: u16) {
+        self.store(address, self.registers.accumulator);
     }
 
     // Addressing modes
