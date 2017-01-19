@@ -108,6 +108,12 @@ impl Cpu {
                 self.txa();
             }
 
+            // TYA
+            0x98 => {
+                cycles = 2;
+                self.tya();
+            }
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -194,6 +200,15 @@ impl Cpu {
 
     fn txa(&mut self) {
         let value = self.registers.index_register_x;
+        self.set_zero_and_negative(value);
+
+        let mut a = self.registers.accumulator;
+
+        self.transfer(value, &mut a);
+    }
+
+    fn tya(&mut self) {
+        let value = self.registers.index_register_y;
         self.set_zero_and_negative(value);
 
         let mut a = self.registers.accumulator;
