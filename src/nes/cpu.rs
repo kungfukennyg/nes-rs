@@ -128,6 +128,15 @@ impl Cpu {
                 self.txs();
             }
 
+            // Stack
+
+            // PHA
+            0x48 => {
+                cycles = 3;
+                self.pha();
+            }
+
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -145,6 +154,12 @@ impl Cpu {
 
     fn store(&mut self, address: u16, value: u8) {
         self.memory.store(address, value);
+    }
+
+    fn push(&mut self, value: u8) {
+        let sp = self.registers.stack_pointer;
+        self.memory.store(0x0100 | (sp as u16), value);
+        self.registers.stack_pointer -= 1;
     }
 
     fn set_zero_and_negative(&mut self, value: u8) {
@@ -246,6 +261,12 @@ impl Cpu {
         let mut sp = self.registers.stack_pointer;
 
         self.transfer(value, &mut sp);
+    }
+
+    fn pha(&mut self) {
+        let a = self.registers.accumulator;
+
+        self.push(a);
     }
 
     // Addressing modes
