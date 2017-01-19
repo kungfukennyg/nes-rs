@@ -90,7 +90,10 @@ impl Cpu {
 
 
             // TAX
-
+            0xaa => {
+                cycles = 2;
+                self.tax();
+            },
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -157,7 +160,7 @@ impl Cpu {
         self.store(address, y);
     }
 
-    fn tax(&mut self, address: u16) {
+    fn tax(&mut self) {
         let value = self.registers.accumulator;
         self.set_zero_and_negative(value);
 
