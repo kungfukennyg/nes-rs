@@ -1,6 +1,8 @@
-mod cpu;
+mod nes;
+
+use nes::cpu::CPu;
 
 fn main() {
-    let mut cpu = cpu::cpu::Cpu::new();
+    let mut cpu = Cpu::new();
     println!("{:?}", cpu);
 }
