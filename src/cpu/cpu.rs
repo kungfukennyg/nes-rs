@@ -47,176 +47,49 @@ impl Cpu {
             // Loading
 
             // LDA
-            0xa1 => {
-                let result = self.alu_address(opcode);
-                self.lda(result.0);
-                cycles = result.1;
-            },
-            0xa5 => {
-                let result = self.alu_address(opcode);
-                self.lda(result.0);
-                cycles = result.1;
-            },
-            0xa9 => {
-                let result = self.alu_address(opcode);
-                self.lda(result.0);
-                cycles = result.1;
-            },
-            0xad => {
-                let result = self.alu_address(opcode);
-                self.lda(result.0);
-                cycles = result.1;
-            },
-            0xb1 => {
-                let result = self.alu_address(opcode);
-                self.lda(result.0);
-                cycles = result.1;
-            },
-            0xb5 => {
-                let result = self.alu_address(opcode);
-                self.lda(result.0);
-                cycles = result.1;
-            },
-            0xb9 => {
-                let result = self.alu_address(opcode);
-                self.lda(result.0);
-                cycles = result.1;
-            },
-            0xbd => {
+            0xa1 | 0xa5 | 0xa9 | 0xad | 0xb1 | 0xb5 | 0xb9 | 0xbd => {
                 let result = self.alu_address(opcode);
                 self.lda(result.0);
                 cycles = result.1;
             },
 
             // LDX
-            0xa2 => {
-                let result = self.rmw_address(opcode);
-                self.ldx(result.0);
-                cycles = result.1;
-            },
-            0xa6 => {
-                let result = self.rmw_address(opcode);
-                self.ldx(result.0);
-                cycles = result.1;
-            },
-            0xae => {
-                let result = self.rmw_address(opcode);
-                self.ldx(result.0);
-                cycles = result.1;
-            },
-            0xb2 => {
-                let result = self.rmw_address(opcode);
-                self.ldx(result.0);
-                cycles = result.1;
-            },
-            0xb6 => {
-                let result = self.rmw_address(opcode);
-                self.ldx(result.0);
-                cycles = result.1;
-            },
-            0xbe => {
+            0xa2 | 0xa6 | 0xa3 | 0xb2 | 0xb6 | 0xbe => {
                 let result = self.rmw_address(opcode);
                 self.ldx(result.0);
                 cycles = result.1;
             },
 
             // LDY
-            0xa0 => {
-                let result = self.control_address(opcode);
-                self.ldy(result.0);
-                cycles = result.1;
-            },
-            0xa4 => {
-                let result = self.control_address(opcode);
-                self.ldy(result.0);
-                cycles = result.1;
-            },
-            0xac => {
-                let result = self.control_address(opcode);
-                self.ldy(result.0);
-                cycles = result.1;
-            },
-            0xb4 => {
-                let result = self.control_address(opcode);
-                self.ldy(result.0);
-                cycles = result.1;
-            },
-            0xbc => {
+            0xa0 | 0xa4 | 0xac | 0xb4 | 0xbc => {
                 let result = self.control_address(opcode);
                 self.ldy(result.0);
                 cycles = result.1;
             },
 
             // STA
-            0x81 => {
-                let result = self.alu_address(opcode);
-                self.sta(result.0);
-                cycles = result.1;
-            },
-            0x85 => {
-                let result = self.alu_address(opcode);
-                self.sta(result.0);
-                cycles = result.1;
-            },
-            0x84 => {
-                let result = self.alu_address(opcode);
-                self.sta(result.0);
-                cycles = result.1;
-            },
-            0x91 => {
-                let result = self.alu_address(opcode);
-                self.sta(result.0);
-                cycles = result.1;
-            },
-            0x95 => {
-                let result = self.alu_address(opcode);
-                self.sta(result.0);
-                cycles = result.1;
-            },
-            0x99 => {
-                let result = self.alu_address(opcode);
-                self.sta(result.0);
-                cycles = result.1;
-            },
-            0x9d => {
+            0x81 | 0x85 | 0x8d | 0x91 | 0x95 | 0x99 | 0x9d => {
                 let result = self.alu_address(opcode);
                 self.sta(result.0);
                 cycles = result.1;
             },
 
             // STX
-            0x86 => {
-                let result = self.rmw_address(opcode);
-                self.stx(result.0);
-                cycles = result.1;
-            },
-            0x8e => {
-                let result = self.rmw_address(opcode);
-                self.stx(result.0);
-                cycles = result.1;
-            },
-            0x96 => {
+            0x86 | 0x8e | 0x96 => {
                 let result = self.rmw_address(opcode);
                 self.stx(result.0);
                 cycles = result.1;
             },
 
             // STY
-            0x84 => {
+            0x84 | 0x8c | 0x94 => {
                 let result = self.control_address(opcode);
                 self.sty(result.0);
                 cycles = result.1;
             },
-            0x8c => {
-                let result = self.control_address(opcode);
-                self.sty(result.0);
-                cycles = result.1;
-            },
-            0x94 => {
-                let result = self.control_address(opcode);
-                self.sty(result.0);
-                cycles = result.1;
-            },
+
+
+            // TAX
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
