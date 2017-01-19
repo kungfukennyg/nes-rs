@@ -192,7 +192,7 @@ impl Cpu {
 
     // Instructions
 
-    // Load byte into accumulator register from memory
+    // Loads a byte into the accumulator register from memory
     fn lda(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.accumulator = result;
@@ -204,30 +204,31 @@ impl Cpu {
         self.registers.index_register_y = result;
     }
 
-    // Load byte into index y register from memory
+    // Loads a byte into the index y register from memory
     fn ldy(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.index_register_y = result;
     }
 
-    // Store byte in memory from accumulator
+    // Stores a byte in memory from the accumulator registry
     fn sta(&mut self, address: u16) {
         let a = self.registers.accumulator;
         self.store(address, a);
     }
 
-    // Store byte in memory from index x register
+    // Stores a byte in memory from the index x register
     fn stx(&mut self, address: u16) {
         let x = self.registers.index_register_x;
         self.store(address, x);
     }
 
-    // Store byte in memory from index y register
+    // Stores a byte in memory from the index y register
     fn sty(&mut self, address: u16) {
         let y = self.registers.index_register_y;
         self.store(address, y);
     }
 
+    // Transfers the value of the accumulator registry into the index x registry
     fn tax(&mut self) {
         let value = self.registers.accumulator;
         self.set_zero_and_negative(value);
@@ -237,6 +238,7 @@ impl Cpu {
         self.transfer(value, &mut x);
     }
 
+    // Transfers the value in the accumulator registry into the index y registry
     fn tay(&mut self) {
         let value = self.registers.accumulator;
         self.set_zero_and_negative(value);
@@ -246,6 +248,7 @@ impl Cpu {
         self.transfer(value, &mut y);
     }
 
+    // Transfers the value in the index x registry into the accumulator registry
     fn txa(&mut self) {
         let value = self.registers.index_register_x;
         self.set_zero_and_negative(value);
@@ -255,6 +258,7 @@ impl Cpu {
         self.transfer(value, &mut a);
     }
 
+    // Transfers the value in the index y registry into the accumulator registry
     fn tya(&mut self) {
         let value = self.registers.index_register_y;
         self.set_zero_and_negative(value);
@@ -264,6 +268,7 @@ impl Cpu {
         self.transfer(value, &mut a);
     }
 
+    // Transfers the value in the stack pointer registry into the index x registry
     fn tsx(&mut self) {
         let value = self.registers.stack_pointer;
         self.set_zero_and_negative(value);
@@ -273,6 +278,7 @@ impl Cpu {
         self.transfer(value, &mut x);
     }
 
+    // Transfers the value in the index x registry into the stack pointer registry
     fn txs(&mut self) {
         let value = self.registers.index_register_x;
         self.set_zero_and_negative(value);
@@ -282,12 +288,14 @@ impl Cpu {
         self.transfer(value, &mut sp);
     }
 
+    // Pushes the value of the accumulator registry onto the stack
     fn pha(&mut self) {
         let a = self.registers.accumulator;
 
         self.push(a);
     }
 
+    // Pushes status flags onto the stack
     fn php(&mut self) {
         let flags = self.status.value() & 0x10;
 
