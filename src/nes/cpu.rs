@@ -120,6 +120,12 @@ impl Cpu {
             0xba => {
                 cycles = 2;
                 self.tsx();
+            },
+
+            // TXS
+            0x9a => {
+                cycles = 2;
+                self.txs();
             }
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
@@ -231,6 +237,15 @@ impl Cpu {
         let mut x = self.registers.index_register_x;
 
         self.transfer(value, &mut x);
+    }
+
+    fn txs(&mut self) {
+        let value = self.registers.index_register_x;
+        self.set_zero_and_negative(value);
+
+        let mut sp = self.registers.stack_pointer;
+
+        self.transfer(value, &mut sp);
     }
 
     // Addressing modes
