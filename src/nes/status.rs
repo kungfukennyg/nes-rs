@@ -25,6 +25,17 @@ pub struct Status {
 
 impl Status {
 
+    pub fn new() -> Self {
+        Status {
+            carry_flag: false,
+            zero_flag: false,
+            interrupt_flag: false,
+            break_flag: false,
+            overflow_flag: false,
+            negative_flag: false
+        }
+    }
+
     pub fn set_negative(&mut self, value: u8) {
         self.negative_flag = (value & 0x80) == 0;
     }
@@ -37,14 +48,16 @@ impl Status {
         self.carry_flag = value;
     }
 
-    pub fn value(&self) {
-        let value = 0;
-        value |= self.carry_flag << CARRY_BIT;
-        value |= self.zero_flag << ZERO_FLAG;
-        value |= self.interrupt_flag << INTERRUPT_FLAG;
-        value |= self.break_flag << BREAK_FLAG;
-        value |= self.overflow_flag << OVERFLOW_FLAG;
-        value |= self.negative_flag << NEGATIVE_FLAG;
+    pub fn value(&self) -> u8 {
+        let mut value = 0;
 
+        value |= (self.carry_flag as u8) << CARRY_BIT;
+        value |= (self.zero_flag as u8) << ZERO_FLAG;
+        value |= (self.interrupt_flag as u8) << INTERRUPT_FLAG;
+        value |= (self.break_flag as u8) << BREAK_FLAG;
+        value |= (self.overflow_flag as u8) << OVERFLOW_FLAG;
+        value |= (self.negative_flag as u8) << NEGATIVE_FLAG;
+
+        value
     }
 }

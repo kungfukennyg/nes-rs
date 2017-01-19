@@ -35,7 +35,7 @@ impl Cpu {
         Cpu {
             registers: Registers::default(),
             memory: NesMemory::new(),
-            status: Status
+            status: Status::new()
         }
     }
 
