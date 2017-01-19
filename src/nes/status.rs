@@ -38,6 +38,4 @@ impl Status {
     pub fn set_carry(&mut self, value: bool) {
         self.carry_flag = value;
     }
-
-    pub fn get_value()
 }

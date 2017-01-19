@@ -1,6 +1,6 @@
 mod nes;
 
-use nes::cpu::CPu;
+use nes::cpu::Cpu;
 
 fn main() {
     let mut cpu = Cpu::new();
