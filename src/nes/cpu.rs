@@ -90,6 +90,8 @@ impl Cpu {
                 cycles = result.1;
             },
 
+            // Transferring
+
             // TAX
             0xaa => {
                 cycles = 2;
@@ -112,6 +114,12 @@ impl Cpu {
             0x98 => {
                 cycles = 2;
                 self.tya();
+            },
+
+            // TSX
+            0xba => {
+                cycles = 2;
+                self.tsx();
             }
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
@@ -214,6 +222,15 @@ impl Cpu {
         let mut a = self.registers.accumulator;
 
         self.transfer(value, &mut a);
+    }
+
+    fn tsx(&mut self) {
+        let value = self.registers.stack_pointer;
+        self.set_zero_and_negative(value);
+
+        let mut x = self.registers.index_register_x;
+
+        self.transfer(value, &mut x);
     }
 
     // Addressing modes
