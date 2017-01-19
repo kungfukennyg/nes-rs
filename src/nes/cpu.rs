@@ -144,6 +144,12 @@ impl Cpu {
                 self.php();
             }
 
+            // PLA
+            0x68 => {
+                cycles = 4;
+                self.pla();
+            }
+
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
@@ -168,6 +174,11 @@ impl Cpu {
         let sp = self.registers.stack_pointer;
         self.memory.store(0x0100 | (sp as u16), value);
         self.registers.stack_pointer -= 1;
+    }
+
+    fn pull(&mut self) -> u8 {
+        self.registers.stack_pointer += 1;
+        self.memory.fetch(0x0100 | (self.registers.stack_pointer as u16))
     }
 
     fn set_zero_and_negative(&mut self, value: u8) {
@@ -281,6 +292,13 @@ impl Cpu {
         let flags = self.status.value() & 0x10;
 
         self.push(flags);
+    }
+
+    // Loads a byte from the stack into the accumulator registry
+    fn pla(&mut self) {
+        let value = self.pull();
+        self.set_zero_and_negative(value);
+        self.registers.accumulator = value;
     }
 
     // Addressing modes
