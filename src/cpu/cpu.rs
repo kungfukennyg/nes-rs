@@ -168,7 +168,7 @@ impl Cpu {
                     cycles = 4;
                     address = self.absolute_address();
                 },
-                _ => panic!("TODO")
+                _ => panic!("unknown alu operation {:#x}", (opcode >> 2) & 0x03)
             }
         } else {
             match (opcode >> 2) & 0x03 {
@@ -194,7 +194,7 @@ impl Cpu {
                     address = result.0;
                     cycles += result.1;
                 }
-                _ => panic!("TODO")
+                _ => panic!("unknown operation {:#x}", (opcode >> 2) & 0x03)
             }
         }
 
@@ -222,8 +222,9 @@ impl Cpu {
                 0x03 => {
                     cycles = 4;
                     address = self.absolute_address();
-                }
-            }
+                },
+                _ => panic!("unknown rmw operation {:#x}", (opcode >> 2) & 0x03)
+            };
         } else {
             let index: Index;
             match (opcode >> 2) & 0x03 {
@@ -256,8 +257,11 @@ impl Cpu {
                         _ => index = Index::X,
                     }
 
-                    address = self.absolute_indexed_address(index);
-                }
+                    let result = self.absolute_indexed_address(index);
+                    address = result.0;
+                    cycles += result.1;
+                },
+                _ => panic!("unknown operation {:#x}", (opcode >> 2) & 0x03)
             }
         }
 
@@ -284,11 +288,10 @@ impl Cpu {
                 0x03 => {
                     cycles = 4;
                     address = self.absolute_address();
-                }
-            }
-        }
-        else
-        {
+                },
+                _ => panic!("unknown control operation {:#x}", (opcode >> 2) & 0x03)
+            };
+        } else {
             match (opcode >> 2) & 0x03 {
                 0x00 => {
                     cycles = 2;
@@ -307,9 +310,12 @@ impl Cpu {
                     let result = self.absolute_indexed_address(Index::X);
                     address = result.0;
                     cycles += result.1;
-                }
-            }
+                },
+                _ => panic!("unknown operation {:#x}", (opcode >> 2) & 0x03)
+            };
         }
+
+        (address, cycles)
     }
 
     fn indexed_indirect_address(&mut self) -> u16 {
