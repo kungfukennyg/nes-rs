@@ -67,6 +67,8 @@ impl Cpu {
                 cycles = result.1;
             },
 
+            // Storing
+
             // STA
             0x81 | 0x85 | 0x8d | 0x91 | 0x95 | 0x99 | 0x9d => {
                 let result = self.alu_address(opcode);
@@ -88,12 +90,18 @@ impl Cpu {
                 cycles = result.1;
             },
 
-
             // TAX
             0xaa => {
                 cycles = 2;
                 self.tax();
             },
+
+            // TAY
+            0xa8 => {
+                cycles = 2;
+                self.tay();
+            },
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -167,6 +175,15 @@ impl Cpu {
         let mut x = self.registers.index_register_x;
 
         self.transfer(value, &mut x);
+    }
+
+    fn tay(&mut self) {
+        let value = self.registers.accumulator;
+        self.set_zero_and_negative(value);
+
+        let mut y = self.registers.index_register_y;
+
+        self.transfer(value, &mut y);
     }
 
     // Addressing modes
