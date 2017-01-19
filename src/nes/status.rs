@@ -15,8 +15,6 @@ pub struct Status {
     zero_flag: bool,
     // (I) interrupt disable (used to ignore IRQs)
     interrupt_flag: bool,
-    // (D) decimal mode (used to switch to BCD mode, not used by NES variation of CPU)
-    decimal_flag: bool,
     // (B) break flag (used to indicate that a break (BRK) has executed, causing an IRQ)
     break_flag: bool,
     // (V) overflow flag (set if an invalid two's complement result was obtained from previous
