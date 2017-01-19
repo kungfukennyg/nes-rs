@@ -110,6 +110,15 @@ impl Cpu {
         self.memory.store(address, value);
     }
 
+    fn set_zero_and_negative(&mut self, value: u8) {
+        self.registers.processor_status.set_zero(value);
+        self.registers.processor_status.set_negative(value);
+    }
+
+    fn transfer(&self, from: u8, to: &mut u8) {
+        *to = from;
+    }
+
     // Instructions
 
     // Load byte into accumulator register from memory
@@ -132,17 +141,29 @@ impl Cpu {
 
     // Store byte in memory from accumulator
     fn sta(&mut self, address: u16) {
-        self.store(address, self.registers.accumulator);
+        let a = self.registers.accumulator;
+        self.store(address, a);
     }
 
     // Store byte in memory from index x register
     fn stx(&mut self, address: u16) {
-        self.store(address, self.registers.index_register_x);
+        let x = self.registers.index_register_x;
+        self.store(address, x);
     }
 
     // Store byte in memory from index y register
     fn sty(&mut self, address: u16) {
-        self.store(address, self.registers.index_register_y);
+        let y = self.registers.index_register_y;
+        self.store(address, y);
+    }
+
+    fn tax(&mut self, address: u16) {
+        let value = self.registers.accumulator;
+        self.set_zero_and_negative(value);
+
+        let mut x = self.registers.index_register_x;
+
+        self.transfer(value, &mut x);
     }
 
     // Addressing modes
@@ -405,7 +426,7 @@ impl Cpu {
         let value = self.memory.fetch(self.registers.program_counter) as u16;
         self.registers.program_counter += 1;
         let offset = if value > 0x7f {
-            -(0x0100 - value)
+            !(0x0100 - value)
         } else {
             value
         };
