@@ -26,14 +26,16 @@ static CYCLE_TABLE: [u8; 256] = [
 #[derive(Debug)]
 pub struct Cpu {
     registers: Registers,
-    memory: NesMemory
+    memory: NesMemory,
+    status: Status
 }
 
 impl Cpu {
     pub fn new() -> Self {
         Cpu {
             registers: Registers::default(),
-            memory: NesMemory::new()
+            memory: NesMemory::new(),
+            status: Status
         }
     }
 
@@ -134,6 +136,12 @@ impl Cpu {
             0x48 => {
                 cycles = 3;
                 self.pha();
+            },
+
+            // PHP
+            0x08 => {
+                cycles = 3;
+                self.php();
             }
 
 
@@ -267,6 +275,12 @@ impl Cpu {
         let a = self.registers.accumulator;
 
         self.push(a);
+    }
+
+    fn php(&mut self) {
+        let flags = self.status.value() & 0x10;
+
+        self.push(flags);
     }
 
     // Addressing modes
