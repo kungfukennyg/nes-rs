@@ -102,6 +102,12 @@ impl Cpu {
                 self.tay();
             },
 
+            // TXA
+            0x8a => {
+                cycles = 2;
+                self.txa();
+            }
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -184,6 +190,15 @@ impl Cpu {
         let mut y = self.registers.index_register_y;
 
         self.transfer(value, &mut y);
+    }
+
+    fn txa(&mut self) {
+        let value = self.registers.index_register_x;
+        self.set_zero_and_negative(value);
+
+        let mut a = self.registers.accumulator;
+
+        self.transfer(value, &mut a);
     }
 
     // Addressing modes
