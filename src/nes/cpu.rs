@@ -159,6 +159,13 @@ impl Cpu {
                 cycles = result.1;
             }
 
+            // EOR
+            0x41 | 0x45 | 0x49 | 0x4d | 0x51 | 0x55 | 0x59 | 0x5d => {
+                let result = self.alu_address(opcode);
+                self.eor(result.0);
+                cycles = result.1;
+            },
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -317,6 +324,8 @@ impl Cpu {
         self.registers.accumulator = value;
     }
 
+    // Performs a logical AND on a byte from memory and the accumulator's value, and stores the
+    // result in the accumulator
     fn and(&mut self, address: u16) {
         let value = self.memory.fetch(address);
 
@@ -324,6 +333,13 @@ impl Cpu {
         self.registers.accumulator &= value;
     }
 
+    // Performs an exclusive OR on a byte of memory and the accumulator's value, and stores the
+    // result in the accumulator
+    fn eor(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        self.set_zero_and_negative(value);
+        self.registers.accumulator ^= value;
+    }
     // Addressing modes
 
     fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
