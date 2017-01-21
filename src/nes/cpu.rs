@@ -166,6 +166,12 @@ impl Cpu {
                 cycles = result.1;
             },
 
+            // ORA
+            0x01 | 0x05 | 0x09 | 0x04 | 0x11 | 0x15 | 0x19 | 0x1d => {
+                let result = self.alu_address(opcode);
+                self.ora(result.0);
+                cycles = result.1;
+            },
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -339,6 +345,14 @@ impl Cpu {
         let value = self.memory.fetch(address);
         self.set_zero_and_negative(value);
         self.registers.accumulator ^= value;
+    }
+
+    // Performs an inclusive OR on a byte of memory and the accumulator's value, and stores the
+    // result in the accumulator
+    fn ora(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        self.set_zero_and_negative(value);
+        self.registers.accumulator |= value;
     }
     // Addressing modes
 
