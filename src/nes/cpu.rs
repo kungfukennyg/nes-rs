@@ -150,6 +150,14 @@ impl Cpu {
                 self.pla();
             }
 
+            // Bitwise
+
+            // AND
+            0x21 | 0x25 | 0x29 | 0x2d | 0x31 | 0x35 | 0x39 | 0x3d => {
+                let result = self.alu_address(opcode);
+                self.and(result.0);
+                cycles = result.1;
+            }
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
@@ -307,6 +315,13 @@ impl Cpu {
         let value = self.pull();
         self.set_zero_and_negative(value);
         self.registers.accumulator = value;
+    }
+
+    fn and(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+
+        self.set_zero_and_negative(value);
+        self.registers.accumulator &= value;
     }
 
     // Addressing modes
