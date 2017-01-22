@@ -296,6 +296,7 @@ impl Cpu {
                         }
                         _ => panic!("Unreachable")
                     }
+                    self.ror(address);
                 }
             }
 
