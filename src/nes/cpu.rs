@@ -185,7 +185,7 @@ impl Cpu {
                         0x06 => {
                             address = self.zero_page_address();
                             cycles = 5;
-                        },
+                        }
                         0x16 => {
                             address = self.zero_page_indexed_address(Index::X);
                             cycles = 6;
@@ -198,11 +198,44 @@ impl Cpu {
                         0x0e => {
                             address = self.absolute_address();
                             cycles = 6;
-                        },
+                        }
                         _ => panic!("Unreachable")
                     }
 
                     self.asl(address);
+                }
+            }
+            // LSR
+            0x4a | 0x46 | 0x56 | 0x4e | 0x5e => {
+                if opcode == 0x4a {
+                    self.lsr_accumulator();
+                    cycles = 2;
+                }
+                else
+                {
+                    let address;
+                    match opcode {
+                        0x46 => {
+                            address = self.zero_page_address();
+                            cycles = 5;
+                        }
+                        0x56 => {
+                            address = self.zero_page_indexed_address(Index::X);
+                            cycles = 6;
+                        }
+                        0x4e => {
+                            address = self.absolute_address();
+                            cycles = 6;
+                        }
+                        0x5e => {
+                            let result = self.absolute_indexed_address(Index::X);
+                            address = result.0;
+                            cycles = 7;
+                        }
+                        _ => panic!("Unreachable")
+                    }
+
+                    self.lsr(address);
                 }
             }
 
@@ -418,7 +451,19 @@ impl Cpu {
         let mut a = self.registers.accumulator;
         self.transfer(result, &mut a);
     }
-
+    // Shifts the contents of memory at the given address right.
+    fn lsr(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        let result = self.shift_right(value, false);
+        self.memory.store(address, result);
+    }
+    // Shifts the contents of the accumulator registry to the right (see fn lsr())
+    fn lsr_accumulator(&mut self) {
+        let value = self.registers.accumulator;
+        let result = self.shift_right(value, false);
+        let mut a = self.registers.accumulator;
+        self.transfer(result, &mut a);
+    }
     // Addressing modes
 
     fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
