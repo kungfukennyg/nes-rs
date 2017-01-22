@@ -1,8 +1,14 @@
-use super::status::Status;
 use super::memory;
 use super::memory::Memory;
 use super::memory::NesMemory;
 use std::cell::RefCell;
+
+const CARRY_BIT: u8 = 0;
+const ZERO_FLAG: u8 = 1;
+const INTERRUPT_FLAG: u8 = 2;
+const BREAK_FLAG: u8 = 4;
+const OVERFLOW_FLAG: u8 = 6;
+const NEGATIVE_FLAG: u8 = 7;
 
 static CYCLE_TABLE: [u8; 256] = [
     /*0x00*/ 7,6,2,8,3,3,5,5,3,2,2,2,4,4,6,6,
@@ -27,7 +33,6 @@ static CYCLE_TABLE: [u8; 256] = [
 pub struct Cpu {
     registers: Registers,
     memory: NesMemory,
-    status: Status
 }
 
 impl Cpu {
@@ -35,7 +40,6 @@ impl Cpu {
         Cpu {
             registers: Registers::default(),
             memory: NesMemory::new(),
-            status: Status::new()
         }
     }
 
@@ -181,8 +185,7 @@ impl Cpu {
     // load byte from memory at given address, setting zero and negative flags as appropriate
     fn load(&mut self, address: u16) -> u8 {
         let result = self.memory.fetch(address);
-        self.registers.processor_status.set_negative(result);
-        self.registers.processor_status.set_zero(result);
+        self.registers.set_zn(result);
 
         result
     }
@@ -202,11 +205,6 @@ impl Cpu {
         self.memory.fetch(0x0100 | (self.registers.stack_pointer as u16))
     }
 
-    fn set_zero_and_negative(&mut self, value: u8) {
-        self.registers.processor_status.set_zero(value);
-        self.registers.processor_status.set_negative(value);
-    }
-
     fn transfer(&self, from: u8, to: &mut u8) {
         *to = from;
     }
@@ -218,140 +216,123 @@ impl Cpu {
         let result = self.load(address);
         self.registers.accumulator = result;
     }
-
     // Load byte into index x register from memory
     fn ldx(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.index_register_y = result;
     }
-
     // Loads a byte into the index y register from memory
     fn ldy(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.index_register_y = result;
     }
-
     // Stores a byte in memory from the accumulator registry
     fn sta(&mut self, address: u16) {
         let a = self.registers.accumulator;
         self.store(address, a);
     }
-
     // Stores a byte in memory from the index x register
     fn stx(&mut self, address: u16) {
         let x = self.registers.index_register_x;
         self.store(address, x);
     }
-
     // Stores a byte in memory from the index y register
     fn sty(&mut self, address: u16) {
         let y = self.registers.index_register_y;
         self.store(address, y);
     }
-
     // Transfers the value of the accumulator registry into the index x registry
     fn tax(&mut self) {
         let value = self.registers.accumulator;
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
 
         let mut x = self.registers.index_register_x;
 
         self.transfer(value, &mut x);
     }
-
     // Transfers the value in the accumulator registry into the index y registry
     fn tay(&mut self) {
         let value = self.registers.accumulator;
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
 
         let mut y = self.registers.index_register_y;
 
         self.transfer(value, &mut y);
     }
-
     // Transfers the value in the index x registry into the accumulator registry
     fn txa(&mut self) {
         let value = self.registers.index_register_x;
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
 
         let mut a = self.registers.accumulator;
 
         self.transfer(value, &mut a);
     }
-
     // Transfers the value in the index y registry into the accumulator registry
     fn tya(&mut self) {
         let value = self.registers.index_register_y;
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
 
         let mut a = self.registers.accumulator;
 
         self.transfer(value, &mut a);
     }
-
     // Transfers the value in the stack pointer registry into the index x registry
     fn tsx(&mut self) {
         let value = self.registers.stack_pointer;
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
 
         let mut x = self.registers.index_register_x;
 
         self.transfer(value, &mut x);
     }
-
     // Transfers the value in the index x registry into the stack pointer registry
     fn txs(&mut self) {
         let value = self.registers.index_register_x;
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
 
         let mut sp = self.registers.stack_pointer;
 
         self.transfer(value, &mut sp);
     }
-
     // Pushes the value of the accumulator registry onto the stack
     fn pha(&mut self) {
         let a = self.registers.accumulator;
 
         self.push(a);
     }
-
     // Pushes status flags onto the stack
     fn php(&mut self) {
-        let flags = self.status.value() & 0x10;
-
+        let mut flags = self.registers.processor_status;
+        flags |= 1 << BREAK_FLAG; // set break flag
         self.push(flags);
     }
-
     // Loads a byte from the stack into the accumulator registry
     fn pla(&mut self) {
         let value = self.pull();
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
         self.registers.accumulator = value;
     }
-
     // Performs a logical AND on a byte from memory and the accumulator's value, and stores the
     // result in the accumulator
     fn and(&mut self, address: u16) {
         let value = self.memory.fetch(address);
 
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
         self.registers.accumulator &= value;
     }
-
     // Performs an exclusive OR on a byte of memory and the accumulator's value, and stores the
     // result in the accumulator
     fn eor(&mut self, address: u16) {
         let value = self.memory.fetch(address);
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
         self.registers.accumulator ^= value;
     }
-
     // Performs an inclusive OR on a byte of memory and the accumulator's value, and stores the
     // result in the accumulator
     fn ora(&mut self, address: u16) {
         let value = self.memory.fetch(address);
-        self.set_zero_and_negative(value);
+        self.registers.set_zn(value);
         self.registers.accumulator |= value;
     }
     // Addressing modes
@@ -637,7 +618,7 @@ struct Registers {
     program_counter: u16,
     // (P) processor status (indicate results of last arithmetic and logic instructions,
     // indicates break/interrupts)
-    processor_status: Status
+    processor_status: u8
 }
 
 impl Registers {
@@ -646,6 +627,24 @@ impl Registers {
             Index::X => self.index_register_x,
             Index::Y => self.index_register_y
         }
+    }
+
+    fn set_flag(&mut self, flag: u8, value: bool) {
+        if value {
+            self.processor_status |= flag;
+        } else {
+            self.processor_status &= !flag;
+        }
+    }
+
+    fn set_flags(&mut self, value: u8) {
+        // apparently status flags get mangled in some way relating to the unused 5th bit
+        self.processor_status = (value | 0x30) - 0x10;
+    }
+
+    fn set_zn(&mut self, value: u8) {
+        self.set_flag(ZERO_FLAG, value == 0);
+        self.set_flag(NEGATIVE_FLAG, (value & 0x80) != 0);
     }
 }
 

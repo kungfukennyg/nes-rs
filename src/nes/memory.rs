@@ -41,7 +41,7 @@ impl Memory for NesMemory {
         old
     }
 
-    // returns true if two addresses higher bits are the same
+    // returns true if two addresses' higher bits are the same
     fn is_same_page(address1: u16, address2: u16) -> bool {
         (address1 ^ address2) >> 8 == 0
     }
