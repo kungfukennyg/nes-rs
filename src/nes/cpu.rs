@@ -174,6 +174,37 @@ impl Cpu {
                 self.bit(result.0);
                 cycles = result.1;
             }
+            // ASL
+            0x0a | 0x06 | 0x16 | 0x0e | 0x1e => {
+                if opcode == 0x0a {
+                    self.asl_accumulator();
+                    cycles = 2;
+                } else {
+                    let address;
+                    match opcode {
+                        0x06 => {
+                            address = self.zero_page_address();
+                            cycles = 5;
+                        },
+                        0x16 => {
+                            address = self.zero_page_indexed_address(Index::X);
+                            cycles = 6;
+                        }
+                        0x1e => {
+                            let result = self.absolute_indexed_address(Index::X);
+                            address = result.0;
+                            cycles = result.1;
+                        }
+                        0x0e => {
+                            address = self.absolute_address();
+                            cycles = 6;
+                        },
+                        _ => panic!("Unreachable")
+                    }
+
+                    self.asl(address);
+                }
+            }
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
@@ -202,6 +233,29 @@ impl Cpu {
     fn pull(&mut self) -> u8 {
         self.registers.stack_pointer += 1;
         self.memory.fetch(0x0100 | (self.registers.stack_pointer as u16))
+    }
+
+    fn shift_left(&mut self, value: u8, lsb: bool) -> u8 {
+        let mut result = value << 1;
+        if lsb {
+            result |= 1;
+        }
+        self.registers.set_flag(CARRY_BIT, (value & 0x80) != 0);
+        let val = result as u8;
+        self.registers.set_zn(val);
+        val
+    }
+
+    fn shift_right(&mut self, value: u8, msb: bool) -> u8 {
+        let mut result = value >> 1;
+        if msb {
+            result |= 1;
+        }
+
+        self.registers.set_flag(CARRY_BIT, (value & 0x1) != 0);
+        let val = result as u8;
+        self.registers.set_zn(val);
+        val
     }
 
     fn transfer(&self, from: u8, to: &mut u8) {
@@ -348,6 +402,21 @@ impl Cpu {
         self.registers.set_flag(ZERO_FLAG, (value & a) == 0);
         self.registers.set_flag(NEGATIVE_FLAG, (value & 0x80) != 0);
         self.registers.set_flag(OVERFLOW_FLAG, (value & 0x40) != 0);
+    }
+    // Shifts the contents of memory at the given address left. Effectively multiplies memory
+    // contents by two (ignoring two's complement), and sets the carry bit if the result will
+    // not fit in 8 bits.
+    fn asl(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        let result = self.shift_left(value, false);
+        self.memory.store(address, result);
+    }
+    // Shifts the contents of the accumulator registry to the left (see fn asl())
+    fn asl_accumulator(&mut self) {
+        let value = self.registers.accumulator;
+        let result = self.shift_left(value, false);
+        let mut a = self.registers.accumulator;
+        self.transfer(result, &mut a);
     }
 
     // Addressing modes
@@ -642,6 +711,10 @@ impl Registers {
             Index::X => self.index_register_x,
             Index::Y => self.index_register_y
         }
+    }
+
+    fn get_flag(&self, flag: u8) -> bool {
+        (self.processor_status & flag) != 0
     }
 
     fn set_flag(&mut self, flag: u8, value: bool) {
