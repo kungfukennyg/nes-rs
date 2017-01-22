@@ -58,14 +58,12 @@ impl Cpu {
                 self.lda(result.0);
                 cycles = result.1;
             },
-
             // LDX
             0xa2 | 0xa6 | 0xa3 | 0xb2 | 0xb6 | 0xbe => {
                 let result = self.rmw_address(opcode);
                 self.ldx(result.0);
                 cycles = result.1;
             },
-
             // LDY
             0xa0 | 0xa4 | 0xac | 0xb4 | 0xbc => {
                 let result = self.control_address(opcode);
@@ -81,14 +79,12 @@ impl Cpu {
                 self.sta(result.0);
                 cycles = result.1;
             },
-
             // STX
             0x86 | 0x8e | 0x96 => {
                 let result = self.rmw_address(opcode);
                 self.stx(result.0);
                 cycles = result.1;
             },
-
             // STY
             0x84 | 0x8c | 0x94 => {
                 let result = self.control_address(opcode);
@@ -103,31 +99,26 @@ impl Cpu {
                 cycles = 2;
                 self.tax();
             },
-
             // TAY
             0xa8 => {
                 cycles = 2;
                 self.tay();
             },
-
             // TXA
             0x8a => {
                 cycles = 2;
                 self.txa();
             }
-
             // TYA
             0x98 => {
                 cycles = 2;
                 self.tya();
             },
-
             // TSX
             0xba => {
                 cycles = 2;
                 self.tsx();
             },
-
             // TXS
             0x9a => {
                 cycles = 2;
@@ -141,13 +132,11 @@ impl Cpu {
                 cycles = 3;
                 self.pha();
             },
-
             // PHP
             0x08 => {
                 cycles = 3;
                 self.php();
             }
-
             // PLA
             0x68 => {
                 cycles = 4;
@@ -162,14 +151,12 @@ impl Cpu {
                 self.and(result.0);
                 cycles = result.1;
             }
-
             // EOR
             0x41 | 0x45 | 0x49 | 0x4d | 0x51 | 0x55 | 0x59 | 0x5d => {
                 let result = self.alu_address(opcode);
                 self.eor(result.0);
                 cycles = result.1;
             },
-
             // ORA
             0x01 | 0x05 | 0x09 | 0x04 | 0x11 | 0x15 | 0x19 | 0x1d => {
                 let result = self.alu_address(opcode);
