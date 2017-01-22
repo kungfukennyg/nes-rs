@@ -269,6 +269,35 @@ impl Cpu {
                     self.rol(address);
                 }
             }
+            // ROR
+            0x6a | 0x66 | 0x76 | 0x6e | 0x7e => {
+                if opcode == 0x6a {
+                    self.ror_accumulator();
+                    cycles = 2;
+                } else {
+                    let address;
+                    match opcode {
+                        0x66 => {
+                            address = self.zero_page_address();
+                            cycles = 5;
+                        }
+                        0x76 => {
+                            address = self.zero_page_indexed_address(Index::X);
+                            cycles =6;
+                        }
+                        0x6e => {
+                            address = self.absolute_address();
+                            cycles = 6;
+                        }
+                        0x7e => {
+                            let result = self.absolute_indexed_address(Index::X);
+                            address = result.0;
+                            cycles = result.1;
+                        }
+                        _ => panic!("Unreachable")
+                    }
+                }
+            }
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
@@ -477,9 +506,8 @@ impl Cpu {
     }
     // Shifts the contents of the accumulator registry to the left (see fn asl())
     fn asl_accumulator(&mut self) {
-        let value = self.registers.accumulator;
-        let result = self.shift_left(value, false);
         let mut a = self.registers.accumulator;
+        let result = self.shift_left(a, false);
         self.transfer(result, &mut a);
     }
     // Shifts the contents of memory at the given address right.
@@ -506,10 +534,25 @@ impl Cpu {
     // Shift the contents of the accumulator registry to the left, setting bit 0 with the current
     // carry flag.
     fn rol_accumulator(&mut self) {
-        let value = self.registers.accumulator;
-        let carry = self.registers.get_flag(CARRY_BIT);
-        let result = self.shift_left(value, carry);
         let mut a = self.registers.accumulator;
+        let carry = self.registers.get_flag(CARRY_BIT);
+        let result = self.shift_left(a, carry);
+        self.transfer(result, &mut a);
+    }
+    // Shifts the contents of memory at the supplied address to the right, setting bit 7 with the
+    // current carry flag.
+    fn ror(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        let carry = self.registers.get_flag(CARRY_BIT);
+        let result = self.shift_right(value, carry);
+        self.memory.store(address, result);
+    }
+    // Shifts the contents of the accumulator registry to the right, setting bit 7 with the current
+    // carry flag.
+    fn ror_accumulator(&mut self) {
+        let mut a = self.registers.accumulator;
+        let carry = self.registers.get_flag(CARRY_BIT);
+        let result = self.shift_left(a, carry);
         self.transfer(result, &mut a);
     }
 
