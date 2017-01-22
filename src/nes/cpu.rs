@@ -141,6 +141,11 @@ impl Cpu {
             0x68 => {
                 cycles = 4;
                 self.pla();
+            },
+            // PLP
+            0x28 => {
+                cycles = 4;
+                self.plp();
             }
 
             // Bitwise
@@ -299,6 +304,11 @@ impl Cpu {
         let value = self.pull();
         self.registers.set_zn(value);
         self.registers.accumulator = value;
+    }
+    // Pulls a byte from the stack and into the processor status registry
+    fn plp(&mut self) {
+        let value = self.pull();
+        self.registers.set_flags(value);
     }
     // Performs a logical AND on a byte from memory and the accumulator's value, and stores the
     // result in the accumulator
