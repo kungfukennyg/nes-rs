@@ -238,6 +238,35 @@ impl Cpu {
                     self.lsr(address);
                 }
             }
+            // ROL
+            0x2a | 0x26 | 0x36 | 0x2e | 0x3e => {
+                if opcode == 0x2a {
+                    self.rol_accumulator();
+                    cycles = 2;
+                } else {
+                    let address;
+                    match opcode {
+                        0x26 => {
+                            address = self.zero_page_address();
+                            cycles = 5;
+                        }
+                        0x36 => {
+                            address = self.zero_page_indexed_address(Index::X);
+                            cycles = 6;
+                        }
+                        0x2e => {
+                            address = self.absolute_address();
+                            cycles = 6;
+                        }
+                        0x3e => {
+                            let result = self.absolute_indexed_address(Index::X);
+                            address = result.0;
+                            cycles = result.1;
+                        }
+                        _ => panic!("Unreachable")
+                    }
+                }
+            }
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
@@ -464,6 +493,24 @@ impl Cpu {
         let mut a = self.registers.accumulator;
         self.transfer(result, &mut a);
     }
+    // Shifts the contents of memory at the supplied address to the left, setting bit 0 with the
+    // current carry flag.
+    fn rol(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        let carry = self.registers.get_flag(CARRY_BIT);
+        let result = self.shift_left(value, carry);
+        self.memory.store(address, result);
+    }
+    // Shift the contents of the accumulator registry to the left, setting bit 0 with the current
+    // carry flag.
+    fn rol_accumulator(&mut self) {
+        let value = self.registers.accumulator;
+        let carry = self.registers.get_flag(CARRY_BIT);
+        let result = self.shift_left(value, carry);
+        let mut a = self.registers.accumulator;
+        self.transfer(result, &mut a);
+    }
+
     // Addressing modes
 
     fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
