@@ -168,6 +168,13 @@ impl Cpu {
                 self.ora(result.0);
                 cycles = result.1;
             },
+            // BIT
+            0x24 | 0x2c => {
+                let result = self.control_address(opcode);
+                self.bit(result.0);
+                cycles = result.1;
+            }
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -332,6 +339,17 @@ impl Cpu {
         self.registers.set_zn(value);
         self.registers.accumulator |= value;
     }
+    // Tests if one or more bits is set in the supplied memory location. The accumulator's value
+    // is ANDed with the value in memory to set the zero flag, and the value in memory's 6th
+    // and 7th bits are used to set the negative and overflow flag respectively.
+    fn bit(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        let a = self.registers.accumulator;
+        self.registers.set_flag(ZERO_FLAG, (value & a) == 0);
+        self.registers.set_flag(NEGATIVE_FLAG, (value & 0x80) != 0);
+        self.registers.set_flag(OVERFLOW_FLAG, (value & 0x40) != 0);
+    }
+
     // Addressing modes
 
     fn alu_address(&mut self, opcode: u8) -> (u16, u8) {
