@@ -265,6 +265,8 @@ impl Cpu {
                         }
                         _ => panic!("Unreachable")
                     }
+
+                    self.rol(address);
                 }
             }
 
