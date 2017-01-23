@@ -295,6 +295,32 @@ impl Cpu {
                 self.sbc(result.0);
                 cycles = result.1;
             }
+            // DEC
+            0xc6 | 0xd6 | 0xce | 0xde => {
+                let address;
+                match opcode {
+                    0xc6 => {
+                        address = self.zero_page_address();
+                        cycles = 5;
+                    }
+                    0xd6 => {
+                        address = self.zero_page_indexed_address(Index::X);
+                        cycles = 6;
+                    }
+                    0xce => {
+                        address = self.absolute_address();
+                        cycles = 6;
+                    }
+                    0xde => {
+                        let result = self.absolute_indexed_address(Index::X);
+                        address = result.0;
+                        cycles = 7 + result.1;
+                    }
+                    _ => panic!("Unreachable")
+                }
+
+                self.dec(address);
+            }
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
     }
@@ -584,6 +610,12 @@ impl Cpu {
                                 (a ^ result) & 0x80 != 0 && (a ^ value) & 0x80 == 0x80);
         self.registers.set_zn(result);
         self.registers.accumulator = result;
+    }
+    // Decreases the value of the given address in memory by one
+    fn dec(&mut self, address: u16) {
+        let value = self.memory.fetch(address) - 1;
+        self.registers.set_zn(value);
+        self.memory.store(address, value);
     }
 
     // Addressing modes
