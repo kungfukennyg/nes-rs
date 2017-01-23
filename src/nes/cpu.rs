@@ -391,6 +391,12 @@ impl Cpu {
                 self.cmp(result.0);
                 cycles = result.1;
             }
+            // CPX
+            0xe0 | 0xe4 | 0xec => {
+                let result = self.control_address(opcode);
+                self.cpx(result.0);
+                cycles = result.1;
+            }
 
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
@@ -755,6 +761,13 @@ impl Cpu {
         let a = self.registers.accumulator;
         let value = self.memory.fetch(address);
         self.compare(a, value);
+    }
+    // Compares the contents of the index x registry with a value in memory, setting zero and
+    // negative flags as appropriate
+    fn cpx(&mut self, address: u16) {
+        let x = self.registers.index_register_x;
+        let value = self.memory.fetch(address);
+        self.compare(x, value);
     }
 
     // Addressing modes
