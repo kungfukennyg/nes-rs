@@ -375,6 +375,11 @@ impl Cpu {
                 self.clv();
                 cycles = 2;
             }
+            // SEC
+            0x38 => {
+                self.sec();
+                cycles = 2;
+            }
 
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
@@ -718,6 +723,10 @@ impl Cpu {
     // Sets the overflow flag to zero
     fn clv(&mut self) {
         self.registers.set_flag(OVERFLOW_FLAG, false);
+    }
+    // Sets the carry flag to one
+    fn sec(&mut self) {
+        self.registers.set_flag(CARRY_BIT, true);
     }
 
     // Addressing modes
