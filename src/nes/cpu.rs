@@ -357,6 +357,12 @@ impl Cpu {
             0xe8 => {
                 self.inx();
             }
+            // INY
+            0xc8 => {
+                self.iny();
+            }
+
+
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
     }
@@ -679,6 +685,13 @@ impl Cpu {
         self.registers.set_zn(value);
         let mut x = self.registers.index_register_x;
         self.transfer(value, &mut x);
+    }
+    // Adds one to the value of the index y registry
+    fn iny(&mut self) {
+        let value = self.registers.index_register_y + 1;
+        self.registers.set_zn(value);
+        let mut y = self.registers.index_register_y;
+        self.transfer(value, &mut y);
     }
 
     // Addressing modes
