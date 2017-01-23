@@ -370,6 +370,11 @@ impl Cpu {
                 self.cli();
                 cycles = 2;
             }
+            // CLV
+            0xb8 => {
+                self.clv();
+                cycles = 2;
+            }
 
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
@@ -709,6 +714,10 @@ impl Cpu {
     // Sets the interrupt disable flag to zero
     fn cli(&mut self) {
         self.registers.set_flag(INTERRUPT_FLAG, false);
+    }
+    // Sets the overflow flag to zero
+    fn clv(&mut self) {
+        self.registers.set_flag(OVERFLOW_FLAG, false);
     }
 
     // Addressing modes
