@@ -3,12 +3,16 @@ use super::memory::Memory;
 use super::memory::NesMemory;
 use std::cell::RefCell;
 
-const CARRY_BIT: u8 = 0;
-const ZERO_FLAG: u8 = 1;
-const INTERRUPT_FLAG: u8 = 2;
-const BREAK_FLAG: u8 = 4;
-const OVERFLOW_FLAG: u8 = 6;
-const NEGATIVE_FLAG: u8 = 7;
+const CARRY_BIT: u8 = 1 << 0;
+const ZERO_FLAG: u8 = 1 << 1;
+const INTERRUPT_FLAG: u8 = 1 << 2;
+const BREAK_FLAG: u8 = 1 << 4;
+const OVERFLOW_FLAG: u8 = 1 << 6;
+const NEGATIVE_FLAG: u8 = 1 << 7;
+
+const NMI_ADDR: u16 = 0xfffa;
+const RESET_ADDR: u16 = 0xfffc;
+const BRK_ADDR: u16 = 0xfffe;
 
 #[derive(Debug)]
 pub struct Cpu {
@@ -487,6 +491,18 @@ impl Cpu {
                 cycles = 6;
             }
 
+            // System
+
+            // BRK
+            0x00 => {
+                self.brk();
+                cycles = 7;
+            }
+            // NOP
+            0xea => {
+                // No op
+                cycles = 2;
+            }
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
@@ -673,8 +689,7 @@ impl Cpu {
     // Pushes status flags onto the stack
     fn php(&mut self) {
         let mut flags = self.registers.processor_status;
-        flags |= 1 << BREAK_FLAG; // set break flag
-        self.push(flags);
+        self.push(flags | BREAK_FLAG);
     }
     // Loads a byte from the stack into the accumulator registry
     fn pla(&mut self) {
@@ -988,6 +1003,18 @@ impl Cpu {
         let flags = self.pull();
         self.registers.set_flags(flags);
         self.registers.program_counter = self.pull_word();
+    }
+    //
+    fn brk(&mut self) {
+        let pc = self.registers.program_counter + 1;
+        self.push_word(pc);
+        let flags = self.registers.processor_status;
+        self.push(flags | BREAK_FLAG);
+        self.registers.set_flag(INTERRUPT_FLAG, true);
+        let low = self.load(BRK_ADDR) as u16;
+        let high = self.load(BRK_ADDR + 1) as u16;
+
+        self.registers.program_counter = (high << 8) | low;
     }
 
     // Addressing modes
