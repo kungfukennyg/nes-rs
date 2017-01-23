@@ -353,6 +353,10 @@ impl Cpu {
 
                 self.inc(address);
             }
+            // INX
+            0xe8 => {
+                self.inx();
+            }
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
     }
@@ -668,6 +672,13 @@ impl Cpu {
         let value = self.memory.fetch(address) + 1;
         self.registers.set_zn(value);
         self.memory.store(address, value);
+    }
+    // Adds one to the value of the index x registry
+    fn inx(&mut self) {
+        let value = self.registers.index_register_x + 1;
+        self.registers.set_zn(value);
+        let mut x = self.registers.index_register_x;
+        self.transfer(value, &mut x);
     }
 
     // Addressing modes
