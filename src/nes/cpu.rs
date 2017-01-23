@@ -31,7 +31,7 @@ impl Cpu {
 
         match opcode {
 
-            // Loading
+            // Storage
 
             // LDA
             0xa1 | 0xa5 | 0xa9 | 0xad | 0xb1 | 0xb5 | 0xb9 | 0xbd => {
@@ -51,9 +51,6 @@ impl Cpu {
                 self.ldy(result.0);
                 cycles = result.1;
             }
-
-            // Storing
-
             // STA
             0x81 | 0x85 | 0x8d | 0x91 | 0x95 | 0x99 | 0x9d => {
                 let result = self.alu_address(opcode);
@@ -72,9 +69,6 @@ impl Cpu {
                 self.sty(result.0);
                 cycles = result.1;
             }
-
-            // Transferring
-
             // TAX
             0xaa => {
                 cycles = 2;
@@ -361,6 +355,14 @@ impl Cpu {
             // INY
             0xc8 => {
                 self.iny();
+                cycles = 2;
+            }
+
+            // Registers
+
+            // CLC
+            0x18 => {
+                self.clc();
                 cycles = 2;
             }
 
@@ -694,6 +696,10 @@ impl Cpu {
         self.registers.set_zn(value);
         let mut y = self.registers.index_register_y;
         self.transfer(value, &mut y);
+    }
+    // Sets the carry flag to zero
+    fn clc(&mut self) {
+        self.registers.set_flag(CARRY_BIT, false);
     }
 
     // Addressing modes
