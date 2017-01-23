@@ -385,6 +385,12 @@ impl Cpu {
                 self.sei();
                 cycles = 2;
             }
+            // CMP
+            0xc1 | 0xc5 | 0xc9 | 0xcd | 0xd1 | 0xd5 | 0xd9 | 0xdd => {
+                let result = self.alu_address(opcode);
+                self.cmp(result.0);
+                cycles = result.1;
+            }
 
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
@@ -439,6 +445,12 @@ impl Cpu {
 
     fn transfer(&self, from: u8, to: &mut u8) {
         *to = from;
+    }
+
+    fn compare(&mut self, x: u8, y: u8) {
+        let result = x as u32 - y as u32;
+        self.registers.set_flag(CARRY_BIT, (result & 0x100) == 0);
+        self.registers.set_zn(result as u8);
     }
 
     // Instructions
@@ -736,6 +748,13 @@ impl Cpu {
     // Sets the interrupt disable flag to one
     fn sei(&mut self) {
         self.registers.set_flag(INTERRUPT_FLAG, true);
+    }
+    // Compares the contents of the accumulator with a value in memory, setting zero and negative
+    // flags as appropriate
+    fn cmp(&mut self, address: u16) {
+        let a = self.registers.accumulator;
+        let value = self.memory.fetch(address);
+        self.compare(a, value);
     }
 
     // Addressing modes
