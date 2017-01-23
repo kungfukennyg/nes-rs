@@ -455,6 +455,38 @@ impl Cpu {
                 cycles += result.1;
             }
 
+            // Jump
+
+            // JMP
+            0x4c | 0x6c => {
+                let address;
+                if opcode == 0x4c {
+                    address = self.absolute_address();
+                    cycles = 3;
+                } else {
+                    address = self.indirect_address();
+                    cycles = 5;
+                }
+
+                self.jmp(address);
+            }
+            // JSR
+            0x20 => {
+                let address = self.absolute_address();
+                self.jsr(address);
+                cycles = 6;
+            }
+            // RTS
+            0x60 => {
+                self.rts();
+                cycles = 6;
+            }
+            // RTI
+            0x40 => {
+                self.rti();
+                cycles = 6;
+            }
+
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
@@ -468,6 +500,14 @@ impl Cpu {
         result
     }
 
+    fn load_word(&mut self) -> u16 {
+        let low = self.memory.fetch(self.registers.program_counter) as u16;
+        let high = self.memory.fetch(self.registers.program_counter + 1) as u16;
+        self.registers.program_counter += 2;
+
+        low | (high << 8)
+    }
+
     fn store(&mut self, address: u16, value: u8) {
         self.memory.store(address, value);
     }
@@ -478,9 +518,21 @@ impl Cpu {
         self.registers.stack_pointer -= 1;
     }
 
+    fn push_word(&mut self, value: u16) {
+        self.push((value >> 8) as u8);
+        self.push(value as u8);
+    }
+
     fn pull(&mut self) -> u8 {
         self.registers.stack_pointer += 1;
         self.memory.fetch(0x0100 | (self.registers.stack_pointer as u16))
+    }
+
+    fn pull_word(&mut self) -> u16 {
+        let low = self.pull() as u16;
+        let high = self.pull() as u16;
+
+        (high << 8) | low
     }
 
     fn shift_left(&mut self, value: u8, lsb: bool) -> u8 {
@@ -917,6 +969,26 @@ impl Cpu {
             0
         }
     }
+    // Sets the program counter to the supplied address
+    fn jmp(&mut self, address: u16) {
+        self.registers.program_counter = address;
+    }
+    //
+    fn jsr(&mut self, address: u16) {
+        let value = self.registers.program_counter - 1;
+        self.push_word(value);
+    }
+    //
+    fn rts(&mut self) {
+        let value = self.pull_word() + 1;
+        self.registers.program_counter = value;
+    }
+    //
+    fn rti(&mut self) {
+        let flags = self.pull();
+        self.registers.set_flags(flags);
+        self.registers.program_counter = self.pull_word();
+    }
 
     // Addressing modes
 
@@ -1137,11 +1209,7 @@ impl Cpu {
     // Retrieves two bytes of memory, and increments the program counter twice. Returns the
     // value interpreted as little endian
     fn absolute_address(&mut self) -> u16 {
-        let low = self.memory.fetch(self.registers.program_counter);
-        let high = self.memory.fetch(self.registers.program_counter + 1);
-        self.registers.program_counter += 2;
-
-        ((high as u16) << 8) | (low as u16)
+        self.load_word()
     }
 
     // Adds the contents of the register pertaining to the supplied index to the address
@@ -1159,11 +1227,7 @@ impl Cpu {
     // using the supplied index register as an offset. Also increments the program counter.
     // Returns the resulting address and the number of cycles this operation should take.
     fn absolute_indexed_address(&mut self, index: Index) -> (u16, u8) {
-        let low = self.memory.fetch(self.registers.program_counter);
-        let high = self.memory.fetch(self.registers.program_counter + 1);
-        self.registers.program_counter += 2;
-
-        let address = ((high as u16) << 8) | (low as u16);
+        let address = self.load_word();
         let result = address + (self.registers.register_from_index(index) as u16);
 
         let mut cycles = 0;
@@ -1185,6 +1249,17 @@ impl Cpu {
 
         let result = self.registers.program_counter + offset;
         result
+    }
+
+    fn indirect_address(&mut self) -> u16 {
+        let low = self.memory.fetch(self.registers.program_counter) as u16;
+        let high = self.memory.fetch(self.registers.program_counter + 1) as u16;
+        self.registers.program_counter += 2;
+
+        let low_val = self.memory.fetch(low) as u16;
+        let high_val = self.memory.fetch(high) as u16;
+
+        high_val << 8 | low_val
     }
 }
 
