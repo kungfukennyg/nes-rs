@@ -289,6 +289,12 @@ impl Cpu {
                 self.adc(result.0);
                 cycles = result.1;
             }
+            //SBC
+            0xe1 | 0xe5 | 0xeb | 0xe9 | 0xed | 0xf1 | 0xf5 | 0xf9 | 0xfd => {
+                let result = self.alu_address(opcode);
+                self.sbc(result.0);
+                cycles = result.1;
+            }
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
     }
@@ -558,6 +564,24 @@ impl Cpu {
         let a = self.registers.accumulator;
         self.registers.set_flag(OVERFLOW_FLAG,
                                 (a ^ value) & 0x80 == 0 && (a ^ result) & 0x80 == 0x80);
+        self.registers.set_zn(result);
+        self.registers.accumulator = result;
+    }
+    // Subtracts the contents of memory at the given address from the value of the accumulator,
+    // clearing the carry if overflow occurs.
+    fn sbc(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        let a = self.registers.accumulator;
+        let mut result = a as u32 - value as u32;
+        if !self.registers.get_flag(CARRY_BIT) {
+            result -= 1;
+        }
+
+        self.registers.set_flag(CARRY_BIT, (result & 0x100) == 0);
+
+        let result = result as u8;
+        self.registers.set_flag(OVERFLOW_FLAG,
+                                (a ^ result) & 0x80 != 0 && (a ^ value) & 0x80 == 0x80);
         self.registers.set_zn(result);
         self.registers.accumulator = result;
     }
