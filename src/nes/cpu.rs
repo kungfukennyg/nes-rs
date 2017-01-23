@@ -404,6 +404,57 @@ impl Cpu {
                 cycles = result.1;
             }
 
+            // Branch
+
+            // BCC
+            0x90 => {
+                let result = self.control_address(opcode);
+                cycles = self.bcc(result.0);
+                cycles += result.1;
+            }
+            // BCS
+            0xb0 => {
+                let result = self.control_address(opcode);
+                cycles = self.bcs(result.0);
+                cycles += result.1;
+            }
+            // BEQ
+            0xf0 => {
+                let result = self.control_address(opcode);
+                cycles = self.beq(result.0);
+                cycles += result.1;
+            }
+            // BMI
+            0x30 => {
+                let result = self.control_address(opcode);
+                cycles = self.bmi(result.0);
+                cycles += result.1;
+            }
+            // BNE
+            0xd0 => {
+                let result = self.control_address(opcode);
+                cycles = self.bne(result.0);
+                cycles += result.1;
+            }
+            // BPL
+            0x10 => {
+                let result = self.control_address(opcode);
+                cycles = self.bpl(result.0);
+                cycles += result.1;
+            }
+            // BVC
+            0x50 => {
+                let result = self.control_address(opcode);
+                cycles = self.bvc(result.0);
+                cycles += result.1;
+            }
+            // BVS
+            0x70 => {
+                let result = self.control_address(opcode);
+                cycles = self.bvs(result.0);
+                cycles += result.1;
+            }
+
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
@@ -463,6 +514,16 @@ impl Cpu {
         let result = x as u32 - y as u32;
         self.registers.set_flag(CARRY_BIT, (result & 0x100) == 0);
         self.registers.set_zn(result as u8);
+    }
+
+    fn branch(&mut self, address: u16) -> u8 {
+        let mut cycles = 1;
+        let pc = self.registers.program_counter;
+        if !NesMemory::is_same_page(pc, address) {
+            cycles += 1;
+        }
+        self.registers.program_counter = address;
+        cycles
     }
 
     // Instructions
@@ -781,6 +842,80 @@ impl Cpu {
         let y = self.registers.index_register_y;
         let value = self.memory.fetch(address);
         self.compare(y, value);
+    }
+    // Adds the supplied address to the program counter (causing a branch to a new location) if the
+    // carry flag is not set
+    fn bcc(&mut self, address: u16) -> u8 {
+        if !self.registers.get_flag(CARRY_BIT) {
+            self.branch(address)
+        } else {
+            0
+        }
+    }
+    // Adds the supplied address to the program counter (causing a branch to a new location) if the
+    // carry flag is set
+    fn bcs(&mut self, address: u16) -> u8 {
+        if self.registers.get_flag(CARRY_BIT) {
+            self.branch(address)
+        } else {
+            0
+        }
+    }
+    // Adds the supplied address to the program counter (causing a branch to a new location) if the
+    // zero flag is set
+    fn beq(&mut self, address: u16) -> u8 {
+        if self.registers.get_flag(ZERO_FLAG) {
+            self.branch(address)
+        } else {
+            0
+        }
+    }
+    // Adds the supplied address to the program counter (causing a branch to a new location) if the
+    // negative flag is set
+    fn bmi(&mut self, address: u16) -> u8 {
+        if self.registers.get_flag(NEGATIVE_FLAG) {
+            self.branch(address)
+        } else {
+            0
+        }
+    }
+    // Adds the supplied address to the program counter (causing a branch to a new location) if the
+    // zero flag is not set
+    fn bne(&mut self, address: u16) -> u8 {
+        if !self.registers.get_flag(ZERO_FLAG) {
+            self.branch(address)
+        } else {
+            0
+        }
+    }
+    // Adds the supplied address to the program counter (causing a branch to a new location) if the
+    // negative flag is not set
+    fn bpl(&mut self, address: u16) -> u8 {
+        if !self.registers.get_flag(NEGATIVE_FLAG) {
+            self.branch(address)
+        }
+        else
+        {
+            0
+        }
+    }
+    // Adds the supplied address to the program counter (causing a branch to a new location) if the
+    // overflow flag is not set
+    fn bvc(&mut self, address: u16) -> u8 {
+        if !self.registers.get_flag(OVERFLOW_FLAG) {
+            self.branch(address)
+        } else {
+            0
+        }
+    }
+    // Adds the supplied address to the program counter (causing a branch to a new location) if the
+    // overflow flag is set
+    fn bvs(&mut self, address: u16) -> u8 {
+        if self.registers.get_flag(OVERFLOW_FLAG) {
+            self.branch(address)
+        } else {
+            0
+        }
     }
 
     // Addressing modes
