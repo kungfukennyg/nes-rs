@@ -365,6 +365,11 @@ impl Cpu {
                 self.clc();
                 cycles = 2;
             }
+            // CLI
+            0x58 => {
+                self.cli();
+                cycles = 2;
+            }
 
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
@@ -700,6 +705,10 @@ impl Cpu {
     // Sets the carry flag to zero
     fn clc(&mut self) {
         self.registers.set_flag(CARRY_BIT, false);
+    }
+    // Sets the interrupt disable flag to zero
+    fn cli(&mut self) {
+        self.registers.set_flag(INTERRUPT_FLAG, false);
     }
 
     // Addressing modes
