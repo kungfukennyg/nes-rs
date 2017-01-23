@@ -300,6 +300,14 @@ impl Cpu {
                 }
             }
 
+            // Math
+
+            // ADC
+            0x61 | 0x65 | 0x69 | 0x6d | 0x71 | 0x75 | 0x79 | 0x7d => {
+                let result = self.alu_address(opcode);
+                self.adc(result.0);
+                cycles = result.1;
+            }
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
 
@@ -555,6 +563,24 @@ impl Cpu {
         let carry = self.registers.get_flag(CARRY_BIT);
         let result = self.shift_left(a, carry);
         self.transfer(result, &mut a);
+    }
+    // Adds the contents of memory at the given address to the value of the accumulator, setting
+    // the carry bit if an overflow occurs.
+    fn adc(&mut self, address: u16) {
+        let value = self.memory.fetch(address);
+        let mut result = self.registers.accumulator as u32 + value as u32;
+        if self.registers.get_flag(CARRY_BIT) {
+            result += 1;
+        }
+
+        self.registers.set_flag(CARRY_BIT, (result & 0x100) != 0);
+
+        let result = result as u8;
+        let a = self.registers.accumulator;
+        self.registers.set_flag(OVERFLOW_FLAG,
+                                (a ^ value) & 0x80 == 0 && (a ^ result) & 0x80 == 0x80);
+        self.registers.set_zn(result);
+        self.registers.accumulator = result;
     }
 
     // Addressing modes
