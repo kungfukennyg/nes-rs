@@ -321,6 +321,11 @@ impl Cpu {
 
                 self.dec(address);
             }
+            // DEX
+            0xca => {
+                self.dex();
+                cycles = 2;
+            }
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
     }
@@ -616,6 +621,13 @@ impl Cpu {
         let value = self.memory.fetch(address) - 1;
         self.registers.set_zn(value);
         self.memory.store(address, value);
+    }
+    // Decreases the value of the index x registry by one
+    fn dex(&mut self) {
+        let value = self.registers.index_register_x - 1;
+        self.registers.set_zn(value);
+        let mut x = self.registers.index_register_x;
+        self.transfer(value, &mut x);
     }
 
     // Addressing modes
