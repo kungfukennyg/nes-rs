@@ -380,6 +380,11 @@ impl Cpu {
                 self.sec();
                 cycles = 2;
             }
+            // SEI
+            0x78 => {
+                self.sei();
+                cycles = 2;
+            }
 
 
             _ => panic!("Unrecognized opcode {:#x}", opcode)
@@ -727,6 +732,10 @@ impl Cpu {
     // Sets the carry flag to one
     fn sec(&mut self) {
         self.registers.set_flag(CARRY_BIT, true);
+    }
+    // Sets the interrupt disable flag to one
+    fn sei(&mut self) {
+        self.registers.set_flag(INTERRUPT_FLAG, true);
     }
 
     // Addressing modes
