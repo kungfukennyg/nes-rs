@@ -326,6 +326,11 @@ impl Cpu {
                 self.dex();
                 cycles = 2;
             }
+            // DEY
+            0x88 => {
+                self.dey();
+                cycles = 2;
+            }
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
     }
@@ -628,6 +633,13 @@ impl Cpu {
         self.registers.set_zn(value);
         let mut x = self.registers.index_register_x;
         self.transfer(value, &mut x);
+    }
+    // Decreases the value of the index y registry by one
+    fn dey(&mut self) {
+        let value = self.registers.index_register_y - 1;
+        self.registers.set_zn(value);
+        let mut y = self.registers.index_register_y;
+        self.transfer(value, &mut y);
     }
 
     // Addressing modes
