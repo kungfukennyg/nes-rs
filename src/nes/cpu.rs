@@ -356,10 +356,12 @@ impl Cpu {
             // INX
             0xe8 => {
                 self.inx();
+                cycles = 2;
             }
             // INY
             0xc8 => {
                 self.iny();
+                cycles = 2;
             }
 
 
