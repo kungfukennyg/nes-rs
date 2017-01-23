@@ -10,25 +10,6 @@ const BREAK_FLAG: u8 = 4;
 const OVERFLOW_FLAG: u8 = 6;
 const NEGATIVE_FLAG: u8 = 7;
 
-static CYCLE_TABLE: [u8; 256] = [
-    /*0x00*/ 7,6,2,8,3,3,5,5,3,2,2,2,4,4,6,6,
-    /*0x10*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
-    /*0x20*/ 6,6,2,8,3,3,5,5,4,2,2,2,4,4,6,6,
-    /*0x30*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
-    /*0x40*/ 6,6,2,8,3,3,5,5,3,2,2,2,3,4,6,6,
-    /*0x50*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
-    /*0x60*/ 6,6,2,8,3,3,5,5,4,2,2,2,5,4,6,6,
-    /*0x70*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
-    /*0x80*/ 2,6,2,6,3,3,3,3,2,2,2,2,4,4,4,4,
-    /*0x90*/ 2,6,2,6,4,4,4,4,2,5,2,5,5,5,5,5,
-    /*0xA0*/ 2,6,2,6,3,3,3,3,2,2,2,2,4,4,4,4,
-    /*0xB0*/ 2,5,2,5,4,4,4,4,2,4,2,4,4,4,4,4,
-    /*0xC0*/ 2,6,2,8,3,3,5,5,2,2,2,2,4,4,6,6,
-    /*0xD0*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
-    /*0xE0*/ 2,6,3,8,3,3,5,5,2,2,2,2,4,4,6,6,
-    /*0xF0*/ 2,5,2,8,4,4,6,6,2,4,2,7,4,4,7,7,
-];
-
 #[derive(Debug)]
 pub struct Cpu {
     registers: Registers,
@@ -193,7 +174,7 @@ impl Cpu {
                         0x1e => {
                             let result = self.absolute_indexed_address(Index::X);
                             address = result.0;
-                            cycles = result.1;
+                            cycles = 7 + result.1;
                         }
                         0x0e => {
                             address = self.absolute_address();
@@ -230,7 +211,7 @@ impl Cpu {
                         0x5e => {
                             let result = self.absolute_indexed_address(Index::X);
                             address = result.0;
-                            cycles = 7;
+                            cycles = 7 + result.1;
                         }
                         _ => panic!("Unreachable")
                     }
@@ -261,7 +242,7 @@ impl Cpu {
                         0x3e => {
                             let result = self.absolute_indexed_address(Index::X);
                             address = result.0;
-                            cycles = result.1;
+                            cycles = 7 + result.1;
                         }
                         _ => panic!("Unreachable")
                     }
@@ -283,7 +264,7 @@ impl Cpu {
                         }
                         0x76 => {
                             address = self.zero_page_indexed_address(Index::X);
-                            cycles =6;
+                            cycles = 6;
                         }
                         0x6e => {
                             address = self.absolute_address();
@@ -292,7 +273,7 @@ impl Cpu {
                         0x7e => {
                             let result = self.absolute_indexed_address(Index::X);
                             address = result.0;
-                            cycles = result.1;
+                            cycles = 7 + result.1;
                         }
                         _ => panic!("Unreachable")
                     }
@@ -310,8 +291,6 @@ impl Cpu {
             }
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
-
-        cycles += CYCLE_TABLE[opcode as usize];
     }
 
     // load byte from memory at given address, setting zero and negative flags as appropriate
