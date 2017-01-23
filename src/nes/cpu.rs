@@ -331,6 +331,28 @@ impl Cpu {
                 self.dey();
                 cycles = 2;
             }
+            // INC
+            0xe6 | 0xf6 | 0xfe => {
+                let address;
+                match opcode {
+                    0xe6 => {
+                        address = self.zero_page_address();
+                        cycles = 6;
+                    }
+                    0xf6 => {
+                        address = self.zero_page_indexed_address(Index::X);
+                        cycles = 6;
+                    }
+                    0xfe => {
+                        let result = self.absolute_indexed_address(Index::X);
+                        address = result.0;
+                        cycles = 7 + result.1;
+                    }
+                    _ => panic!("Unreachable")
+                }
+
+                self.inc(address);
+            }
             _ => panic!("Unrecognized opcode {:#x}", opcode)
         }
     }
@@ -640,6 +662,12 @@ impl Cpu {
         self.registers.set_zn(value);
         let mut y = self.registers.index_register_y;
         self.transfer(value, &mut y);
+    }
+    // Adds one to the value of memory at the given address, and stores at the address.
+    fn inc(&mut self, address: u16) {
+        let value = self.memory.fetch(address) + 1;
+        self.registers.set_zn(value);
+        self.memory.store(address, value);
     }
 
     // Addressing modes
