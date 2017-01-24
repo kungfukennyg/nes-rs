@@ -1,4 +1,5 @@
 mod nes;
+mod tests;
 
 use nes::cpu::Cpu;
 

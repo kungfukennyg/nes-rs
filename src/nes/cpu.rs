@@ -16,8 +16,8 @@ const BRK_ADDR: u16 = 0xfffe;
 
 #[derive(Debug)]
 pub struct Cpu {
-    registers: Registers,
-    memory: NesMemory,
+    pub registers: Registers,
+    pub memory: NesMemory,
 }
 
 impl Cpu {
@@ -28,9 +28,10 @@ impl Cpu {
         }
     }
 
-    pub fn execute_instruction(&mut self, value: u8) {
-        let instruction = self.memory.fetch(self.registers.program_counter);
-        let opcode = instruction >> 6;
+    pub fn execute_instruction(&mut self) {
+        let opcode = self.memory.fetch(self.registers.program_counter);
+        self.registers.program_counter += 1;
+        println!("Loaded opcode: {:#b}", opcode);
         let mut cycles = 0;
 
         match opcode {
@@ -504,7 +505,7 @@ impl Cpu {
                 cycles = 2;
             }
 
-            _ => panic!("Unrecognized opcode {:#x}", opcode)
+            _ => panic!("Unrecognized opcode {:?}", opcode)
         }
     }
 
@@ -516,12 +517,11 @@ impl Cpu {
         result
     }
 
-    fn load_word(&mut self) -> u16 {
-        let low = self.memory.fetch(self.registers.program_counter) as u16;
-        let high = self.memory.fetch(self.registers.program_counter + 1) as u16;
+    fn load_word(&mut self, address: u16) -> u16 {
+        let low = self.memory.fetch(address) as u16;
+        let high = self.memory.fetch(address + 1) as u16;
         self.registers.program_counter += 2;
-
-        low | (high << 8)
+        low | high << 8
     }
 
     fn store(&mut self, address: u16, value: u8) {
@@ -1192,13 +1192,10 @@ impl Cpu {
 
     fn indexed_indirect_address(&mut self) -> u16 {
         let value = self.memory.fetch(self.registers.program_counter);
-        let address = (value + self.registers.index_register_y) as u16;
+        let address = (value + self.registers.index_register_x) as u16;
         self.registers.program_counter += 1;
 
-        let low = self.memory.fetch(address);
-        let high = self.memory.fetch((address + 1) & 0x00ff);
-
-        ((high as u16) << 8) | (low as u16)
+        self.load_word(address)
     }
 
     fn indirect_indexed_address(&mut self) -> (u16, u8) {
@@ -1236,7 +1233,8 @@ impl Cpu {
     // Retrieves two bytes of memory, and increments the program counter twice. Returns the
     // value interpreted as little endian
     fn absolute_address(&mut self) -> u16 {
-        self.load_word()
+        let pc = self.registers.program_counter;
+        self.load_word(pc)
     }
 
     // Adds the contents of the register pertaining to the supplied index to the address
@@ -1254,7 +1252,8 @@ impl Cpu {
     // using the supplied index register as an offset. Also increments the program counter.
     // Returns the resulting address and the number of cycles this operation should take.
     fn absolute_indexed_address(&mut self, index: Index) -> (u16, u8) {
-        let address = self.load_word();
+        let pc = self.registers.program_counter;
+        let address = self.load_word(pc);
         let result = address + (self.registers.register_from_index(index) as u16);
 
         let mut cycles = 0;
@@ -1291,19 +1290,19 @@ impl Cpu {
 }
 
 #[derive(Default, Debug)]
-struct Registers {
+pub struct Registers {
     // (A) Accumulator, arithmetic/logic instructions
-    accumulator: u8,
+    pub accumulator: u8,
     // (X/Y) index registers (used for indirect addressing and counters/indexes)
-    index_register_x: u8,
-    index_register_y: u8,
+    pub index_register_x: u8,
+    pub index_register_y: u8,
     // (SP) stack pointer (stores least sig bit of top of the stack)
-    stack_pointer: u8,
+    pub stack_pointer: u8,
     // (PC) program counter (only 16 bit register, points to next instruction to execute)
-    program_counter: u16,
+    pub program_counter: u16,
     // (P) processor status (indicate results of last arithmetic and logic instructions,
     // indicates break/interrupts)
-    processor_status: u8
+    pub processor_status: u8
 }
 
 impl Registers {
