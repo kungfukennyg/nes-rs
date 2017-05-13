@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_assignments, unused_mut)]
 mod nes;
 mod tests;
 

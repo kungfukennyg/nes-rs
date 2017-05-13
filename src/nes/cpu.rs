@@ -45,7 +45,7 @@ impl Cpu {
                 cycles = result.1;
             }
             // LDX
-            0xa2 | 0xa6 | 0xa3 | 0xb2 | 0xb6 | 0xbe => {
+            0xa2 | 0xa6 | 0xae | 0xb6 | 0xbe => {
                 let result = self.rmw_address(opcode);
                 self.ldx(result.0);
                 cycles = result.1;
@@ -604,7 +604,8 @@ impl Cpu {
     // Load byte into index x register from memory
     fn ldx(&mut self, address: u16) {
         let result = self.load(address);
-        self.registers.index_register_y = result;
+        println!("{:x}", result);
+        self.registers.index_register_x = result;
     }
     // Loads a byte into the index y register from memory
     fn ldy(&mut self, address: u16) {
