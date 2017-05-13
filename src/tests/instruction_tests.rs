@@ -130,6 +130,8 @@ mod tests {
         assert!(cpu.registers.accumulator == 0xff);
     }
 
+    // LDX
+
     #[test]
     fn test_ldx_immediate() {
         let mut cpu = Cpu::new();
@@ -206,6 +208,83 @@ mod tests {
         assert!(cpu.registers.index_register_x == 0xff);
     }
 
+    // LDY
 
+    #[test]
+    fn test_ldy_immediate() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xa0);
+        cpu.memory.store(0x0101, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.index_register_y == 0xff);
+    }
+
+    #[test]
+    fn test_ldy_zero_page_y_and_x() {
+        let mut cpu = Cpu::new();
+
+        // Y
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xa4);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.index_register_y == 0xff);
+
+        cpu.memory.reset();
+
+        // X
+        cpu.registers.program_counter = 0x0100;
+        cpu.registers.index_register_x = 0x01;
+
+        cpu.memory.store(0x0100, 0xb4);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.index_register_y == 0xff);
+    }
+
+    #[test]
+    fn test_ldy_absolute_y_and_x()
+    {
+        let mut cpu = Cpu::new();
+
+        // Y
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xac);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.index_register_y == 0xff);
+
+        cpu.memory.reset();
+
+        // X
+        cpu.registers.program_counter = 0x0100;
+        cpu.registers.index_register_x = 1;
+
+        cpu.memory.store(0x0100, 0xbc);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.index_register_y == 0xff);
+    }
 
 }
