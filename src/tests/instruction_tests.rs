@@ -405,4 +405,53 @@ mod tests {
 
         assert!(cpu.memory.fetch(0x0087) == 0xff);
     }
+
+    // STX
+
+    #[test]
+    fn test_stx_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.index_register_x = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x86);
+        cpu.memory.store(0x0101, 0x84);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0xff);
+    }
+
+    #[test]
+    fn test_stx_zero_page_y() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.index_register_x = 0xff;
+        cpu.registers.index_register_y = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x96);
+        cpu.memory.store(0x0101, 0x84);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0xff);
+    }
+
+    #[test]
+    fn test_stx_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.index_register_x = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x8e);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0xff);
+    }
 }
