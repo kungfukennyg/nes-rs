@@ -604,7 +604,6 @@ impl Cpu {
     // Load byte into index x register from memory
     fn ldx(&mut self, address: u16) {
         let result = self.load(address);
-        println!("{:x}", result);
         self.registers.index_register_x = result;
     }
     // Loads a byte into the index y register from memory
