@@ -554,6 +554,7 @@ mod tests {
     }
 
     // TYA
+
     #[test]
     fn test_tya() {
         let mut cpu = Cpu::new();
@@ -566,5 +567,21 @@ mod tests {
         cpu.execute_instruction();
 
         assert!(cpu.registers.accumulator == 0xff);
+    }
+
+    // TSX
+
+    #[test]
+    fn test_tsx() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+        cpu.registers.stack_pointer = 0xff;
+
+        cpu.memory.store(0x0100, 0xba);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.index_register_x == 0xff);
     }
 }
