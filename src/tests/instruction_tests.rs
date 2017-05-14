@@ -584,4 +584,21 @@ mod tests {
 
         assert!(cpu.registers.index_register_x == 0xff);
     }
+
+    // TXS
+
+    #[test]
+    fn test_txs() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.index_register_x = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x9a);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.stack_pointer == 0xff);
+    }
+
 }
