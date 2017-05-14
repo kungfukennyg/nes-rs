@@ -940,4 +940,125 @@ mod tests {
         assert!(cpu.registers.accumulator == 0xf0);
     }
 
+    // ORA
+
+    #[test]
+    fn test_ora_immediate() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xf0;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x09);
+        cpu.memory.store(0x0101, 0x0f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
+
+    #[test]
+    fn test_ora_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xf0;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x05);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x0f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
+
+    #[test]
+    fn test_ora_zero_page_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xf0;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x015);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0x0f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
+
+    #[test]
+    fn test_ora_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xf0;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x0d);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0x0f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
+
+    #[test]
+    fn test_ora_absolute_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xf0;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x1d);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0x0f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
+
+    #[test]
+    fn test_ora_absolute_y() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xf0;
+        cpu.registers.y = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x19);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0x0f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
+
+    #[test]
+    fn test_ora_indirect_y() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xf0;
+        cpu.registers.y = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x11);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x86);
+        cpu.memory.store(0x0085, 0x00);
+        cpu.memory.store(0x0087, 0x0f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
 }

@@ -143,7 +143,7 @@ impl Cpu {
                 cycles = result.1;
             }
             // ORA
-            0x01 | 0x05 | 0x09 | 0x04 | 0x11 | 0x15 | 0x19 | 0x1d => {
+            0x01 | 0x05 | 0x09 | 0x0d | 0x11 | 0x15 | 0x19 | 0x1d => {
                 let result = self.alu_address(opcode);
                 self.ora(result.0);
                 cycles = result.1;
