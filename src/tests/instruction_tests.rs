@@ -601,4 +601,23 @@ mod tests {
         assert!(cpu.registers.stack_pointer == 0xff);
     }
 
+    // PHA
+
+    #[test]
+    fn test_pha() {
+        let mut cpu = Cpu::new();
+
+        // reset registers (just so stack pointer isn't allowed to underflow)
+        cpu.reset();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x48);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.pull() == 0xff);
+    }
+
 }

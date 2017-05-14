@@ -528,27 +528,37 @@ impl Cpu {
         self.memory.store(address, value);
     }
 
-    fn push(&mut self, value: u8) {
+    pub fn push(&mut self, value: u8) {
         let sp = self.registers.stack_pointer;
         self.memory.store(0x0100 | (sp as u16), value);
         self.registers.stack_pointer -= 1;
     }
 
-    fn push_word(&mut self, value: u16) {
+    pub fn push_word(&mut self, value: u16) {
         self.push((value >> 8) as u8);
         self.push(value as u8);
     }
 
-    fn pull(&mut self) -> u8 {
+    pub fn pull(&mut self) -> u8 {
         self.registers.stack_pointer += 1;
         self.memory.fetch(0x0100 | (self.registers.stack_pointer as u16))
     }
 
-    fn pull_word(&mut self) -> u16 {
+    pub fn pull_word(&mut self) -> u16 {
         let low = self.pull() as u16;
         let high = self.pull() as u16;
 
         (high << 8) | low
+    }
+
+    // resets all registers
+    pub fn reset(&mut self) {
+        self.registers.accumulator = 0;
+        self.registers.index_register_x = 0;
+        self.registers.index_register_y = 0;
+        self.registers.set_flag(INTERRUPT_FLAG, true);
+        self.registers.stack_pointer = 0xfd;
+        self.registers.program_counter = RESET_ADDR;
     }
 
     fn shift_left(&mut self, value: u8, lsb: bool) -> u8 {
