@@ -38,7 +38,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
 
         cpu.memory.store(0x0100, 0xb5);
         cpu.memory.store(0x0101, 0x84);
@@ -69,7 +69,7 @@ mod tests {
 
         // X
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_x = 1;
+        cpu.registers.x = 1;
 
         cpu.memory.store(0x0100, 0xbd);
         cpu.memory.store(0x0101, 0x84);
@@ -84,7 +84,7 @@ mod tests {
 
         // Y
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_y = 1;
+        cpu.registers.y = 1;
 
         cpu.memory.store(0x0100, 0xb9);
         cpu.memory.store(0x0101, 0x84);
@@ -101,7 +101,7 @@ mod tests {
 
         // X
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_x = 1;
+        cpu.registers.x = 1;
 
         cpu.memory.store(0x0100, 0xa1);
         cpu.memory.store(0x0101, 0x84);
@@ -117,7 +117,7 @@ mod tests {
 
         // Y
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_y = 1;
+        cpu.registers.y = 1;
 
         cpu.memory.store(0x0100, 0xb1);
         cpu.memory.store(0x0101, 0x84);
@@ -143,7 +143,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_x == 0xff);
+        assert!(cpu.registers.x == 0xff);
     }
 
     #[test]
@@ -159,13 +159,13 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_x == 0xff);
+        assert!(cpu.registers.x == 0xff);
 
         cpu.memory.reset();
 
         // Y
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_y = 0x01;
+        cpu.registers.y = 0x01;
 
         cpu.memory.store(0x0100, 0xb6);
         cpu.memory.store(0x0101, 0x84);
@@ -173,7 +173,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_x == 0xff);
+        assert!(cpu.registers.x == 0xff);
     }
 
     #[test]
@@ -190,13 +190,13 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_x == 0xff);
+        assert!(cpu.registers.x == 0xff);
 
         cpu.memory.reset();
 
         // Y
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_y = 1;
+        cpu.registers.y = 1;
 
         cpu.memory.store(0x0100, 0xbe);
         cpu.memory.store(0x0101, 0x84);
@@ -205,7 +205,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_x == 0xff);
+        assert!(cpu.registers.x == 0xff);
     }
 
     // LDY
@@ -221,7 +221,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_y == 0xff);
+        assert!(cpu.registers.y == 0xff);
     }
 
     #[test]
@@ -237,13 +237,13 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_y == 0xff);
+        assert!(cpu.registers.y == 0xff);
 
         cpu.memory.reset();
 
         // X
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
 
         cpu.memory.store(0x0100, 0xb4);
         cpu.memory.store(0x0101, 0x84);
@@ -251,7 +251,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_y == 0xff);
+        assert!(cpu.registers.y == 0xff);
     }
 
     #[test]
@@ -269,13 +269,13 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_y == 0xff);
+        assert!(cpu.registers.y == 0xff);
 
         cpu.memory.reset();
 
         // X
         cpu.registers.program_counter = 0x0100;
-        cpu.registers.index_register_x = 1;
+        cpu.registers.x = 1;
 
         cpu.memory.store(0x0100, 0xbc);
         cpu.memory.store(0x0101, 0x84);
@@ -284,7 +284,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_y == 0xff);
+        assert!(cpu.registers.y == 0xff);
     }
 
     // STA
@@ -309,7 +309,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x95);
@@ -341,7 +341,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x9d);
@@ -358,7 +358,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_y = 0x01;
+        cpu.registers.y = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x99);
@@ -375,7 +375,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x81);
@@ -393,7 +393,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_y = 0x01;
+        cpu.registers.y = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x91);
@@ -412,7 +412,7 @@ mod tests {
     fn test_stx_zero_page() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_x = 0xff;
+        cpu.registers.x = 0xff;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x86);
@@ -427,8 +427,8 @@ mod tests {
     fn test_stx_zero_page_y() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_x = 0xff;
-        cpu.registers.index_register_y = 0x01;
+        cpu.registers.x = 0xff;
+        cpu.registers.y = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x96);
@@ -443,7 +443,7 @@ mod tests {
     fn test_stx_absolute() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_x = 0xff;
+        cpu.registers.x = 0xff;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x8e);
@@ -461,7 +461,7 @@ mod tests {
     fn test_sty_zero_page() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_y = 0xff;
+        cpu.registers.y = 0xff;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x84);
@@ -476,8 +476,8 @@ mod tests {
     fn test_sty_zero_page_y() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_y = 0xff;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.y = 0xff;
+        cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x94);
@@ -492,7 +492,7 @@ mod tests {
     fn test_sty_absolute() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_y = 0xff;
+        cpu.registers.y = 0xff;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x8c);
@@ -518,7 +518,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_x == 0xff);
+        assert!(cpu.registers.x == 0xff);
     }
 
     // TAY
@@ -534,7 +534,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_y == 0xff);
+        assert!(cpu.registers.y == 0xff);
     }
 
     // TXA
@@ -543,7 +543,7 @@ mod tests {
     fn test_txa() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_x = 0xff;
+        cpu.registers.x = 0xff;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x8a);
@@ -559,7 +559,7 @@ mod tests {
     fn test_tya() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_y = 0xff;
+        cpu.registers.y = 0xff;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x98);
@@ -582,7 +582,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.index_register_x == 0xff);
+        assert!(cpu.registers.x == 0xff);
     }
 
     // TXS
@@ -591,7 +591,7 @@ mod tests {
     fn test_txs() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.index_register_x = 0xff;
+        cpu.registers.x = 0xff;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x9a);
@@ -715,7 +715,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0x0ff;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x35);
@@ -749,7 +749,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_x = 1;
+        cpu.registers.x = 1;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x3d);
@@ -767,7 +767,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_y = 1;
+        cpu.registers.y = 1;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x39);
@@ -785,7 +785,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_y = 1;
+        cpu.registers.y = 1;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x31);
@@ -838,7 +838,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x55);
@@ -871,7 +871,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x5d);
@@ -889,7 +889,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_y = 0x01;
+        cpu.registers.y = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x59);
@@ -907,7 +907,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_x = 0x01;
+        cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x41);
@@ -926,7 +926,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0xff;
-        cpu.registers.index_register_y = 0x01;
+        cpu.registers.y = 0x01;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x51);
