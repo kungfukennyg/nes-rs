@@ -520,4 +520,20 @@ mod tests {
 
         assert!(cpu.registers.index_register_x == 0xff);
     }
+
+    // TAY
+
+    #[test]
+    fn test_tay() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xa8);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.index_register_y == 0xff);
+    }
 }
