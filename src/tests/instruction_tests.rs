@@ -658,4 +658,23 @@ mod tests {
         assert!(cpu.registers.accumulator == 0xff);
     }
 
+    // PLP
+
+    #[test]
+    fn test_plp() {
+        let mut cpu = Cpu::new();
+
+        // set test_pha
+        cpu.reset();
+
+        cpu.registers.program_counter = 0x0100;
+        cpu.push(0xff);
+
+        cpu.memory.store(0x0100, 0x28);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.processor_status == 0xef);
+    }
+
 }
