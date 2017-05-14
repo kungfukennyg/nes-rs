@@ -639,4 +639,23 @@ mod tests {
         assert!(cpu.pull() == 0xff);
     }
 
+    // PLA
+
+    #[test]
+    fn test_pla() {
+        let mut cpu = Cpu::new();
+
+        // see test_pha
+        cpu.reset();
+
+        cpu.registers.program_counter = 0x0100;
+        cpu.push(0xff);
+
+        cpu.memory.store(0x0100, 0x68);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
+
 }
