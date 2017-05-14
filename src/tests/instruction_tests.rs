@@ -1061,4 +1061,39 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0xff);
     }
+
+    // BIT
+
+    #[test]
+    fn test_bit_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x24);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x7f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.processor_status & (1 << 7) == 0);
+    }
+
+    #[test]
+    fn test_bit_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x2c);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0x7f);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.processor_status & (1 << 7) == 0);
+    }
 }
