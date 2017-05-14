@@ -536,4 +536,20 @@ mod tests {
 
         assert!(cpu.registers.index_register_y == 0xff);
     }
+
+    // TXA
+
+    #[test]
+    fn test_txa() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.index_register_x = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x8a);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
 }
