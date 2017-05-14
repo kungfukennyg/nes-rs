@@ -620,4 +620,23 @@ mod tests {
         assert!(cpu.pull() == 0xff);
     }
 
+    // PHP
+
+    #[test]
+    fn test_php() {
+        let mut cpu = Cpu::new();
+
+        // see test_pha
+        cpu.reset();
+
+        cpu.registers.processor_status = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x08);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.pull() == 0xff);
+    }
+
 }
