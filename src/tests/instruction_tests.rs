@@ -552,4 +552,19 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0xff);
     }
+
+    // TYA
+    #[test]
+    fn test_tya() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.index_register_y = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x98);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0xff);
+    }
 }
