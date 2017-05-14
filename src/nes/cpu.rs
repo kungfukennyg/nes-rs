@@ -31,7 +31,7 @@ impl Cpu {
     pub fn execute_instruction(&mut self) {
         let opcode = self.memory.fetch(self.registers.program_counter);
         self.registers.program_counter += 1;
-        println!("Loaded opcode: {:#b}", opcode);
+        println!("Loaded opcode: {:x}", opcode);
         let mut cycles = 0;
 
         match opcode {
@@ -574,7 +574,7 @@ impl Cpu {
         val
     }
 
-    fn transfer(&self, from: u8, to: &mut u8) {
+    fn transfer(from: u8, to: &mut u8) {
         *to = from;
     }
 
@@ -631,54 +631,42 @@ impl Cpu {
         let value = self.registers.accumulator;
         self.registers.set_zn(value);
 
-        let mut x = self.registers.index_register_x;
-
-        self.transfer(value, &mut x);
+        Cpu::transfer(value, &mut self.registers.index_register_x);
     }
     // Transfers the value in the accumulator registry into the index y registry
     fn tay(&mut self) {
         let value = self.registers.accumulator;
         self.registers.set_zn(value);
 
-        let mut y = self.registers.index_register_y;
-
-        self.transfer(value, &mut y);
+        Cpu::transfer(value, &mut self.registers.index_register_y);
     }
     // Transfers the value in the index x registry into the accumulator registry
     fn txa(&mut self) {
         let value = self.registers.index_register_x;
         self.registers.set_zn(value);
 
-        let mut a = self.registers.accumulator;
-
-        self.transfer(value, &mut a);
+        Cpu::transfer(value, &mut self.registers.accumulator);
     }
     // Transfers the value in the index y registry into the accumulator registry
     fn tya(&mut self) {
         let value = self.registers.index_register_y;
         self.registers.set_zn(value);
 
-        let mut a = self.registers.accumulator;
-
-        self.transfer(value, &mut a);
+        Cpu::transfer(value, &mut self.registers.accumulator);
     }
     // Transfers the value in the stack pointer registry into the index x registry
     fn tsx(&mut self) {
         let value = self.registers.stack_pointer;
         self.registers.set_zn(value);
 
-        let mut x = self.registers.index_register_x;
-
-        self.transfer(value, &mut x);
+        Cpu::transfer(value, &mut self.registers.index_register_x);
     }
     // Transfers the value in the index x registry into the stack pointer registry
     fn txs(&mut self) {
         let value = self.registers.index_register_x;
         self.registers.set_zn(value);
 
-        let mut sp = self.registers.stack_pointer;
-
-        self.transfer(value, &mut sp);
+        Cpu::transfer(value, &mut self.registers.stack_pointer);
     }
     // Pushes the value of the accumulator registry onto the stack
     fn pha(&mut self) {
@@ -746,7 +734,7 @@ impl Cpu {
     fn asl_accumulator(&mut self) {
         let mut a = self.registers.accumulator;
         let result = self.shift_left(a, false);
-        self.transfer(result, &mut a);
+        Cpu::transfer(result, &mut a);
     }
     // Shifts the contents of memory at the given address right.
     fn lsr(&mut self, address: u16) {
@@ -759,7 +747,7 @@ impl Cpu {
         let value = self.registers.accumulator;
         let result = self.shift_right(value, false);
         let mut a = self.registers.accumulator;
-        self.transfer(result, &mut a);
+        Cpu::transfer(result, &mut a);
     }
     // Shifts the contents of memory at the supplied address to the left, setting bit 0 with the
     // current carry flag.
@@ -775,7 +763,7 @@ impl Cpu {
         let mut a = self.registers.accumulator;
         let carry = self.registers.get_flag(CARRY_BIT);
         let result = self.shift_left(a, carry);
-        self.transfer(result, &mut a);
+        Cpu::transfer(result, &mut a);
     }
     // Shifts the contents of memory at the supplied address to the right, setting bit 7 with the
     // current carry flag.
@@ -791,7 +779,7 @@ impl Cpu {
         let mut a = self.registers.accumulator;
         let carry = self.registers.get_flag(CARRY_BIT);
         let result = self.shift_left(a, carry);
-        self.transfer(result, &mut a);
+        Cpu::transfer(result, &mut a);
     }
     // Adds the contents of memory at the given address to the value of the accumulator, setting
     // the carry bit if an overflow occurs.
@@ -839,15 +827,13 @@ impl Cpu {
     fn dex(&mut self) {
         let value = self.registers.index_register_x - 1;
         self.registers.set_zn(value);
-        let mut x = self.registers.index_register_x;
-        self.transfer(value, &mut x);
+        Cpu::transfer(value, &mut self.registers.index_register_x);
     }
     // Decreases the value of the index y registry by one
     fn dey(&mut self) {
         let value = self.registers.index_register_y - 1;
         self.registers.set_zn(value);
-        let mut y = self.registers.index_register_y;
-        self.transfer(value, &mut y);
+        Cpu::transfer(value, &mut self.registers.index_register_y);
     }
     // Adds one to the value of memory at the given address, and stores at the address.
     fn inc(&mut self, address: u16) {
@@ -859,15 +845,13 @@ impl Cpu {
     fn inx(&mut self) {
         let value = self.registers.index_register_x + 1;
         self.registers.set_zn(value);
-        let mut x = self.registers.index_register_x;
-        self.transfer(value, &mut x);
+        Cpu::transfer(value, &mut self.registers.index_register_x);
     }
     // Adds one to the value of the index y registry
     fn iny(&mut self) {
         let value = self.registers.index_register_y + 1;
         self.registers.set_zn(value);
-        let mut y = self.registers.index_register_y;
-        self.transfer(value, &mut y);
+        Cpu::transfer(value, &mut self.registers.index_register_y);
     }
     // Sets the carry flag to zero
     fn clc(&mut self) {
