@@ -1790,4 +1790,20 @@ mod tests {
 
         assert!(cpu.memory.fetch(0x0085) == 0x01);
     }
+
+    // DEX
+
+    #[test]
+    fn test_dex() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0x02;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xca);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.x == 0x01);
+    }
 }
