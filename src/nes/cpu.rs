@@ -760,8 +760,7 @@ impl Cpu {
     fn lsr_accumulator(&mut self) {
         let value = self.registers.accumulator;
         let result = self.shift_right(value, false);
-        let mut a = self.registers.accumulator;
-        Cpu::transfer(result, &mut a);
+        Cpu::transfer(result, &mut self.registers.accumulator);
     }
     // Shifts the contents of memory at the supplied address to the left, setting bit 0 with the
     // current carry flag.
@@ -774,10 +773,10 @@ impl Cpu {
     // Shift the contents of the accumulator registry to the left, setting bit 0 with the current
     // carry flag.
     fn rol_accumulator(&mut self) {
-        let mut a = self.registers.accumulator;
+        let a = self.registers.accumulator;
         let carry = self.registers.get_flag(CARRY_BIT);
         let result = self.shift_left(a, carry);
-        Cpu::transfer(result, &mut a);
+        Cpu::transfer(result, &mut self.registers.accumulator);
     }
     // Shifts the contents of memory at the supplied address to the right, setting bit 7 with the
     // current carry flag.
@@ -790,10 +789,10 @@ impl Cpu {
     // Shifts the contents of the accumulator registry to the right, setting bit 7 with the current
     // carry flag.
     fn ror_accumulator(&mut self) {
-        let mut a = self.registers.accumulator;
+        let a = self.registers.accumulator;
         let carry = self.registers.get_flag(CARRY_BIT);
         let result = self.shift_left(a, carry);
-        Cpu::transfer(result, &mut a);
+        Cpu::transfer(result, &mut self.registers.accumulator);
     }
     // Adds the contents of memory at the given address to the value of the accumulator, setting
     // the carry bit if an overflow occurs.
