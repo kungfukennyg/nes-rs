@@ -1579,4 +1579,53 @@ mod tests {
 
         assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
     }
+
+    // CPY
+
+    #[test]
+    fn test_cpy_immediate() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.y = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xc0);
+        cpu.memory.store(0x0101, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cpy_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.y = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xc4);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cpy_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.y = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xc4);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
 }
