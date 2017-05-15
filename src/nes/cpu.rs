@@ -3,12 +3,12 @@ use super::memory::Memory;
 use super::memory::NesMemory;
 use std::cell::RefCell;
 
-static CARRY_BIT: u8 = 1 << 0;
-static ZERO_FLAG: u8 = 1 << 1;
-static INTERRUPT_FLAG: u8 = 1 << 2;
-static BREAK_FLAG: u8 = 1 << 4;
-static OVERFLOW_FLAG: u8 = 1 << 6;
-static NEGATIVE_FLAG: u8 = 1 << 7;
+pub static CARRY_BIT: u8 = 1 << 0;
+pub static ZERO_FLAG: u8 = 1 << 1;
+pub static INTERRUPT_FLAG: u8 = 1 << 2;
+pub static BREAK_FLAG: u8 = 1 << 4;
+pub static OVERFLOW_FLAG: u8 = 1 << 6;
+pub static NEGATIVE_FLAG: u8 = 1 << 7;
 
 const NMI_ADDR: u16 = 0xfffa;
 const RESET_ADDR: u16 = 0xfffc;
