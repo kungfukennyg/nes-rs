@@ -2069,5 +2069,89 @@ mod tests {
         assert!(cpu.memory.fetch(0x0085) == 0x05);
     }
 
+    // ROR
+
+    #[test]
+    fn test_ror_accumulator() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x08;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x6a);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x84);
+    }
+
+    #[test]
+    fn test_ror_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status = cpu::CARRY_BIT;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x66);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x08);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0x84);
+    }
+
+    #[test]
+    fn test_ror_zero_page_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x76);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0x08);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0x84);
+    }
+
+    #[test]
+    fn test_ror_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x6e);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0x08);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0x84);
+    }
+
+    #[test]
+    fn test_ror_absolute_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x7e);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0x08);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0x84);
+    }
 
 }

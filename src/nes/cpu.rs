@@ -579,7 +579,7 @@ impl Cpu {
     fn shift_right(&mut self, value: u8, msb: bool) -> u8 {
         let mut result = value >> 1;
         if msb {
-            result |= 1;
+            result |= 0x80;
         }
 
         self.registers.set_flag(CARRY_BIT, (value & 0x1) != 0);
@@ -791,7 +791,7 @@ impl Cpu {
     fn ror_accumulator(&mut self) {
         let a = self.registers.accumulator;
         let carry = self.registers.get_flag(CARRY_BIT);
-        let result = self.shift_left(a, carry);
+        let result = self.shift_right(a, carry);
         Cpu::transfer(result, &mut self.registers.accumulator);
     }
     // Adds the contents of memory at the given address to the value of the accumulator, setting
