@@ -1238,4 +1238,153 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0x03);
     }
+
+    // SBC
+
+    #[test]
+    fn test_sbc_immediate() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x02;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xe9);
+        cpu.memory.store(0x0101, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x01);
+    }
+
+    #[test]
+    fn test_sbc_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x02;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xe5);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x01);
+    }
+
+    #[test]
+    fn test_sbc_zero_page_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x02;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xf5);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x01);
+    }
+
+    #[test]
+    fn test_sbc_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x02;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xed);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x01);
+    }
+
+    #[test]
+    fn test_sbc_absolute_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x02;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xfd);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x01);
+    }
+
+    #[test]
+    fn test_sbc_absolute_y() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x02;
+        cpu.registers.y = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xf9);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x01);
+    }
+
+    #[test]
+    fn test_sbc_indirect_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x02;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xe1);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0x87);
+        cpu.memory.store(0x0086, 0x00);
+        cpu.memory.store(0x0087, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x01);
+    }
+
+    #[test]
+    fn test_sbc_indirect_y() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x02;
+        cpu.registers.y = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xf1);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x86);
+        cpu.memory.store(0x0085, 0x00);
+        cpu.memory.store(0x0087, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x01);
+    }
 }
