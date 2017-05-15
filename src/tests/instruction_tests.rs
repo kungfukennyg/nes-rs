@@ -1529,4 +1529,54 @@ mod tests {
 
         assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
     }
+
+    // CPX
+
+    #[test]
+    fn test_cpx_immediate() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xe0);
+        cpu.memory.store(0x0101, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cpx_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xe4);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cpx_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xec);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
 }
