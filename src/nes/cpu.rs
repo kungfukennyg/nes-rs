@@ -331,7 +331,7 @@ impl Cpu {
                 cycles = 2;
             }
             // INC
-            0xe6 | 0xf6 | 0xfe => {
+            0xe6 | 0xf6 | 0xfe | 0xee => {
                 let address;
                 match opcode {
                     0xe6 => {
@@ -346,6 +346,10 @@ impl Cpu {
                         let result = self.absolute_indexed_address(Index::X);
                         address = result.0;
                         cycles = 7 + result.1;
+                    }
+                    0xee => {
+                        address = self.absolute_address();
+                        cycles = 6;
                     }
                     _ => panic!("Unreachable")
                 }

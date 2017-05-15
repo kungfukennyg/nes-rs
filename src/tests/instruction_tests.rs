@@ -1628,4 +1628,74 @@ mod tests {
 
         assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
     }
+
+    // INC
+
+    #[test]
+    fn test_inc_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xe6);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0xfe);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0xff);
+    }
+
+    #[test]
+    fn test_inc_zero_page_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xf6);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0xfe);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0xff);
+    }
+
+    #[test]
+    fn test_inc_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xee);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0xfe);
+
+        cpu.execute_instruction();
+
+        println!("{:x}", cpu.memory.fetch(0x0084));
+
+        assert!(cpu.memory.fetch(0x0084) == 0xff);
+    }
+
+    #[test]
+    fn test_inc_absolute_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xfe);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0xfe);
+
+        cpu.execute_instruction();
+
+        println!("{:x}", cpu.memory.fetch(0x0084));
+
+        assert!(cpu.memory.fetch(0x0085) == 0xff);
+    }
 }
