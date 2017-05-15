@@ -1675,8 +1675,6 @@ mod tests {
 
         cpu.execute_instruction();
 
-        println!("{:x}", cpu.memory.fetch(0x0084));
-
         assert!(cpu.memory.fetch(0x0084) == 0xff);
     }
 
@@ -1694,8 +1692,20 @@ mod tests {
 
         cpu.execute_instruction();
 
-        println!("{:x}", cpu.memory.fetch(0x0084));
-
         assert!(cpu.memory.fetch(0x0085) == 0xff);
+    }
+
+    // INX
+
+    #[test]
+    fn test_inx() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0xff; // -1
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xe8);
+
+        assert!(cpu.registers.x == 0xff);
     }
 }
