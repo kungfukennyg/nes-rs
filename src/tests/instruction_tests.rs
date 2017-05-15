@@ -1985,5 +1985,89 @@ mod tests {
         assert!(cpu.memory.fetch(0x0085) == 0x01);
     }
 
-    
+    // ROL
+
+    #[test]
+    fn test_rol_accumulator() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.accumulator = 0x2;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x2a);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x05);
+    }
+
+    #[test]
+    fn test_rol_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x26);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0x05);
+    }
+
+    #[test]
+    fn test_rol_zero_page_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0x01;
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x36);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0x05);
+    }
+
+    #[test]
+    fn test_rol_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x2e);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0x05);
+    }
+
+    #[test]
+    fn test_rol_absolute_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x3e);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0x05);
+    }
+
+
 }
