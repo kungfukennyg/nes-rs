@@ -566,7 +566,7 @@ impl Cpu {
     }
 
     fn shift_left(&mut self, value: u8, lsb: bool) -> u8 {
-        let mut result = value << 1;
+        let mut result = ((value as u16) << 1) as u8;
         if lsb {
             result |= 1;
         }
@@ -746,9 +746,9 @@ impl Cpu {
     }
     // Shifts the contents of the accumulator registry to the left (see fn asl())
     fn asl_accumulator(&mut self) {
-        let mut a = self.registers.accumulator;
+        let a = self.registers.accumulator;
         let result = self.shift_left(a, false);
-        Cpu::transfer(result, &mut a);
+        Cpu::transfer(result, &mut self.registers.accumulator);
     }
     // Shifts the contents of memory at the given address right.
     fn lsr(&mut self, address: u16) {

@@ -1807,6 +1807,8 @@ mod tests {
         assert!(cpu.registers.x == 0x01);
     }
 
+
+
     // DEY
 
     #[test]
@@ -1821,5 +1823,85 @@ mod tests {
         cpu.execute_instruction();
 
         assert!(cpu.registers.y == 0x01);
+    }
+
+    // ASL
+
+    #[test]
+    fn test_asl_accumulator() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0x2;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x0a);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.accumulator == 0x04);
+    }
+
+    #[test]
+    fn test_asl_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x06);
+        cpu.memory.store(0x0101, 0x084);
+        cpu.memory.store(0x0084, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0x04);
+    }
+
+    #[test]
+    fn test_asl_zero_page_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x16);
+        cpu.memory.store(0x0101, 0x084);
+        cpu.memory.store(0x0085, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0x04);
+    }
+
+    #[test]
+    fn test_asl_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x0e);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0x04);
+    }
+
+    #[test]
+    fn test_asl_absolute_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x1e);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0x04);
     }
 }
