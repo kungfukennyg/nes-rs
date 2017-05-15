@@ -1806,4 +1806,20 @@ mod tests {
 
         assert!(cpu.registers.x == 0x01);
     }
+
+    // DEY
+
+    #[test]
+    fn test_dey() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.y = 0x02;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x88);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.y == 0x01);
+    }
 }
