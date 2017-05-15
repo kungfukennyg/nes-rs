@@ -1708,4 +1708,20 @@ mod tests {
 
         assert!(cpu.registers.x == 0xff);
     }
+
+    // INY
+
+    #[test]
+    fn test_iny() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.y = 0xfe; // -2
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xc8);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.y == 0xff);
+    }
 }
