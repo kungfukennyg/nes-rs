@@ -1387,4 +1387,146 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0x01);
     }
+
+    // CMP
+
+    #[test]
+    fn test_cmp_immediate() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xc9);
+        cpu.memory.store(0x0101, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cmp_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xd5);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cmp_zero_page_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xd5);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cmp_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xcd);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cmp_absolute_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xdd);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cmp_absolute_y() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.y = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xd9);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cmp_indirect_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xc1);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0x87);
+        cpu.memory.store(0x0086, 0x00);
+        cpu.memory.store(0x0087, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
+
+    #[test]
+    fn test_cmp_indirect_y() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.accumulator = 0xff;
+        cpu.registers.y = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xd1);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x86);
+        cpu.memory.store(0x0085, 0x00);
+        cpu.memory.store(0x0087, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::ZERO_FLAG));
+    }
 }

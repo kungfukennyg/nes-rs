@@ -1307,7 +1307,7 @@ impl Registers {
         }
     }
 
-    fn get_flag(&self, flag: u8) -> bool {
+    pub fn get_flag(&self, flag: u8) -> bool {
         (self.processor_status & flag) != 0
     }
 
