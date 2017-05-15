@@ -1724,4 +1724,70 @@ mod tests {
 
         assert!(cpu.registers.y == 0xff);
     }
+
+    // DEC
+
+    #[test]
+    fn test_dec_zero_page() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xc6);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0084, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0x01);
+    }
+
+    #[test]
+    fn test_dec_zero_page_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xd6);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0085, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0x01);
+    }
+
+    #[test]
+    fn test_dec_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xce);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0084, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0084) == 0x01);
+    }
+
+    #[test]
+    fn test_dec_absolute_x() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.x = 0x01;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xde);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x00);
+        cpu.memory.store(0x0085, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.memory.fetch(0x0085) == 0x01);
+    }
 }
