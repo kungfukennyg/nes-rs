@@ -2432,4 +2432,19 @@ mod tests {
 
         assert!(!cpu.registers.get_flag(cpu::OVERFLOW_FLAG));
     }
+
+    // SEC
+
+    #[test]
+    fn test_sec() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x38);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.get_flag(cpu::CARRY_BIT));
+    }
 }
