@@ -20,6 +20,7 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0xff);
     }
+
     #[test]
     fn test_lda_zero_page() {
         let mut cpu = Cpu::new();
@@ -34,6 +35,7 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0xff);
     }
+
     #[test]
     fn test_lda_zero_page_x() {
         let mut cpu = Cpu::new();
@@ -49,6 +51,7 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0xff);
     }
+
     #[test]
     fn test_lda_absolute() {
         let mut cpu = Cpu::new();
@@ -64,6 +67,7 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0xff);
     }
+
     #[test]
     fn test_lda_absolute_x_and_y() {
         let mut cpu = Cpu::new();
@@ -96,6 +100,7 @@ mod tests {
 
         assert!(cpu.registers.accumulator == 0xff)
     }
+
     #[test]
     fn test_lda_indirect_x_and_y() {
         let mut cpu = Cpu::new();
@@ -1245,7 +1250,7 @@ mod tests {
     fn test_sbc_immediate() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x02;
         cpu.registers.program_counter = 0x0100;
 
@@ -1261,7 +1266,7 @@ mod tests {
     fn test_sbc_zero_page() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x02;
         cpu.registers.program_counter = 0x0100;
 
@@ -1278,7 +1283,7 @@ mod tests {
     fn test_sbc_zero_page_x() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x02;
         cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
@@ -1296,7 +1301,7 @@ mod tests {
     fn test_sbc_absolute() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x02;
         cpu.registers.program_counter = 0x0100;
 
@@ -1314,7 +1319,7 @@ mod tests {
     fn test_sbc_absolute_x() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x02;
         cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
@@ -1333,7 +1338,7 @@ mod tests {
     fn test_sbc_absolute_y() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x02;
         cpu.registers.y = 0x01;
         cpu.registers.program_counter = 0x0100;
@@ -1352,7 +1357,7 @@ mod tests {
     fn test_sbc_indirect_x() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x02;
         cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
@@ -1372,7 +1377,7 @@ mod tests {
     fn test_sbc_indirect_y() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x02;
         cpu.registers.y = 0x01;
         cpu.registers.program_counter = 0x0100;
@@ -1808,7 +1813,6 @@ mod tests {
     }
 
 
-
     // DEY
 
     #[test]
@@ -1991,7 +1995,7 @@ mod tests {
     fn test_rol_accumulator() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x2;
         cpu.registers.program_counter = 0x0100;
 
@@ -2006,7 +2010,7 @@ mod tests {
     fn test_rol_zero_page() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x26);
@@ -2023,7 +2027,7 @@ mod tests {
         let mut cpu = Cpu::new();
 
         cpu.registers.x = 0x01;
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x36);
@@ -2039,7 +2043,7 @@ mod tests {
     fn test_rol_absolute() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x2e);
@@ -2055,7 +2059,7 @@ mod tests {
     fn test_rol_absolute_x() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
@@ -2075,7 +2079,7 @@ mod tests {
     fn test_ror_accumulator() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.accumulator = 0x08;
         cpu.registers.program_counter = 0x0100;
 
@@ -2090,7 +2094,7 @@ mod tests {
     fn test_ror_zero_page() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status = cpu::CARRY_BIT;
+        cpu.registers.processor_status = cpu::CARRY_FLAG;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x66);
@@ -2106,7 +2110,7 @@ mod tests {
     fn test_ror_zero_page_x() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
@@ -2123,7 +2127,7 @@ mod tests {
     fn test_ror_absolute() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x6e);
@@ -2140,7 +2144,7 @@ mod tests {
     fn test_ror_absolute_x() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.x = 0x01;
         cpu.registers.program_counter = 0x0100;
 
@@ -2235,7 +2239,7 @@ mod tests {
     fn test_bcc() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x90);
@@ -2251,7 +2255,7 @@ mod tests {
     fn test_bcs() {
         let mut cpu = Cpu::new();
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0xb0);
@@ -2373,16 +2377,16 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(!cpu.registers.get_flag(cpu::CARRY_BIT));
+        assert!(!cpu.registers.get_flag(cpu::CARRY_FLAG));
 
-        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.processor_status |= cpu::CARRY_FLAG;
         cpu.registers.program_counter = 0x0100;
 
         cpu.memory.store(0x0100, 0x18);
 
         cpu.execute_instruction();
 
-        assert!(!cpu.registers.get_flag(cpu::CARRY_BIT))
+        assert!(!cpu.registers.get_flag(cpu::CARRY_FLAG))
     }
 
     // CLI
@@ -2445,7 +2449,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.registers.get_flag(cpu::CARRY_BIT));
+        assert!(cpu.registers.get_flag(cpu::CARRY_FLAG));
     }
 
     // SEI

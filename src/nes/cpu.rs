@@ -3,7 +3,7 @@ use super::memory::Memory;
 use super::memory::NesMemory;
 use std::cell::RefCell;
 
-pub static CARRY_BIT: u8 = 1 << 0;
+pub static CARRY_FLAG: u8 = 1 << 0;
 pub static ZERO_FLAG: u8 = 1 << 1;
 pub static INTERRUPT_FLAG: u8 = 1 << 2;
 pub static BREAK_FLAG: u8 = 1 << 4;
@@ -570,7 +570,7 @@ impl Cpu {
         if lsb {
             result |= 1;
         }
-        self.registers.set_flag(CARRY_BIT, (value & 0x80) != 0);
+        self.registers.set_flag(CARRY_FLAG, (value & 0x80) != 0);
         let val = result as u8;
         self.registers.set_zn(val);
         val
@@ -582,7 +582,7 @@ impl Cpu {
             result |= 0x80;
         }
 
-        self.registers.set_flag(CARRY_BIT, (value & 0x1) != 0);
+        self.registers.set_flag(CARRY_FLAG, (value & 0x1) != 0);
         let val = result as u8;
         self.registers.set_zn(val);
         val
@@ -594,7 +594,7 @@ impl Cpu {
 
     fn compare(&mut self, x: u8, y: u8) {
         let result = x as u32 - y as u32;
-        self.registers.set_flag(CARRY_BIT, (result & 0x100) == 0);
+        self.registers.set_flag(CARRY_FLAG, (result & 0x100) == 0);
         self.registers.set_zn(result as u8);
     }
 
@@ -766,7 +766,7 @@ impl Cpu {
     // current carry flag.
     fn rol(&mut self, address: u16) {
         let value = self.memory.fetch(address);
-        let carry = self.registers.get_flag(CARRY_BIT);
+        let carry = self.registers.get_flag(CARRY_FLAG);
         let result = self.shift_left(value, carry);
         self.memory.store(address, result);
     }
@@ -774,7 +774,7 @@ impl Cpu {
     // carry flag.
     fn rol_accumulator(&mut self) {
         let a = self.registers.accumulator;
-        let carry = self.registers.get_flag(CARRY_BIT);
+        let carry = self.registers.get_flag(CARRY_FLAG);
         let result = self.shift_left(a, carry);
         Cpu::transfer(result, &mut self.registers.accumulator);
     }
@@ -782,7 +782,7 @@ impl Cpu {
     // current carry flag.
     fn ror(&mut self, address: u16) {
         let value = self.memory.fetch(address);
-        let carry = self.registers.get_flag(CARRY_BIT);
+        let carry = self.registers.get_flag(CARRY_FLAG);
         let result = self.shift_right(value, carry);
         self.memory.store(address, result);
     }
@@ -790,7 +790,7 @@ impl Cpu {
     // carry flag.
     fn ror_accumulator(&mut self) {
         let a = self.registers.accumulator;
-        let carry = self.registers.get_flag(CARRY_BIT);
+        let carry = self.registers.get_flag(CARRY_FLAG);
         let result = self.shift_right(a, carry);
         Cpu::transfer(result, &mut self.registers.accumulator);
     }
@@ -799,11 +799,11 @@ impl Cpu {
     fn adc(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         let mut result = self.registers.accumulator as u32 + value as u32;
-        if self.registers.get_flag(CARRY_BIT) {
+        if self.registers.get_flag(CARRY_FLAG) {
             result += 1;
         }
 
-        self.registers.set_flag(CARRY_BIT, (result & 0x100) != 0);
+        self.registers.set_flag(CARRY_FLAG, (result & 0x100) != 0);
 
         let result = result as u8;
         let a = self.registers.accumulator;
@@ -818,11 +818,11 @@ impl Cpu {
         let value = self.memory.fetch(address);
         let a = self.registers.accumulator;
         let mut result = a as u32 - value as u32;
-        if !self.registers.get_flag(CARRY_BIT) {
+        if !self.registers.get_flag(CARRY_FLAG) {
             result -= 1;
         }
 
-        self.registers.set_flag(CARRY_BIT, (result & 0x100) == 0);
+        self.registers.set_flag(CARRY_FLAG, (result & 0x100) == 0);
 
         let result = result as u8;
         self.registers.set_flag(OVERFLOW_FLAG,
@@ -868,7 +868,7 @@ impl Cpu {
     }
     // Sets the carry flag to zero
     fn clc(&mut self) {
-        self.registers.set_flag(CARRY_BIT, false);
+        self.registers.set_flag(CARRY_FLAG, false);
     }
     // Sets the interrupt disable flag to zero
     fn cli(&mut self) {
@@ -880,7 +880,7 @@ impl Cpu {
     }
     // Sets the carry flag to one
     fn sec(&mut self) {
-        self.registers.set_flag(CARRY_BIT, true);
+        self.registers.set_flag(CARRY_FLAG, true);
     }
     // Sets the interrupt disable flag to one
     fn sei(&mut self) {
@@ -910,7 +910,7 @@ impl Cpu {
     // Adds the supplied address to the program counter (causing a branch to a new location) if the
     // carry flag is not set
     fn bcc(&mut self, address: u16) -> u8 {
-        if !self.registers.get_flag(CARRY_BIT) {
+        if !self.registers.get_flag(CARRY_FLAG) {
             self.branch(address)
         } else {
             0
@@ -919,7 +919,7 @@ impl Cpu {
     // Adds the supplied address to the program counter (causing a branch to a new location) if the
     // carry flag is set
     fn bcs(&mut self, address: u16) -> u8 {
-        if self.registers.get_flag(CARRY_BIT) {
+        if self.registers.get_flag(CARRY_FLAG) {
             self.branch(address)
         } else {
             0
