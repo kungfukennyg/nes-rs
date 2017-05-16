@@ -2187,4 +2187,27 @@ mod tests {
 
         assert!(cpu.registers.program_counter == 0xffff);
     }
+
+    // JSR
+
+    #[test]
+    fn test_jsr() {
+        let mut cpu = Cpu::new();
+
+        cpu.reset();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x20);
+        cpu.memory.store(0x0101, 0xff);
+        cpu.memory.store(0x0102, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.program_counter == 0x01ff);
+
+        assert!(cpu.memory.fetch(0x01fd) == 0x01);
+
+        assert!(cpu.memory.fetch(0x01fc) == 0x02);
+    }
 }

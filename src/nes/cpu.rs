@@ -989,6 +989,7 @@ impl Cpu {
     fn jsr(&mut self, address: u16) {
         let value = self.registers.program_counter - 1;
         self.push_word(value);
+        self.registers.program_counter = address;
     }
     //
     fn rts(&mut self) {
