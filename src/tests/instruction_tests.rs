@@ -2154,4 +2154,37 @@ mod tests {
         assert!(cpu.memory.fetch(0x0085) == 0x84);
     }
 
+    // JMP
+
+    #[test]
+    fn test_jmp_absolute() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x4c);
+        cpu.memory.store(0x0101, 0xff);
+        cpu.memory.store(0x0102, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.program_counter == 0x01ff);
+    }
+
+    #[test]
+    fn test_jmp_indirect() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x6c);
+        cpu.memory.store(0x0101, 0x84);
+        cpu.memory.store(0x0102, 0x01);
+        cpu.memory.store(0x0184, 0xff);
+        cpu.memory.store(0x0185, 0xff);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.program_counter == 0xffff);
+    }
 }

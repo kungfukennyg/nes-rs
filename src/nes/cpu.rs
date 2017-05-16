@@ -1275,14 +1275,19 @@ impl Cpu {
     }
 
     fn indirect_address(&mut self) -> u16 {
-        let low = self.memory.fetch(self.registers.program_counter) as u16;
-        let high = self.memory.fetch(self.registers.program_counter + 1) as u16;
+        let pc = self.registers.program_counter;
+        let addr = self.load_word(pc);
         self.registers.program_counter += 2;
 
-        let low_val = self.memory.fetch(low) as u16;
-        let high_val = self.memory.fetch(high) as u16;
+        // 6502 has a bug where it only increments the high byte instead
+        // of the entire 16-bit address.
+        let low_val = self.memory.fetch(addr);
+        let high_val = self.memory.fetch((addr & 0xff00) | ((addr + 1) & 0x00ff));
 
-        high_val << 8 | low_val
+        println!("{:x}", low_val);
+        println!("{:x}", high_val);
+
+        (high_val as u16) << 8 | low_val as u16
     }
 }
 
