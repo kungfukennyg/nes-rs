@@ -1285,9 +1285,6 @@ impl Cpu {
         let low_val = self.memory.fetch(addr);
         let high_val = self.memory.fetch((addr & 0xff00) | ((addr + 1) & 0x00ff));
 
-        println!("{:x}", low_val);
-        println!("{:x}", high_val);
-
         (high_val as u16) << 8 | low_val as u16
     }
 }
@@ -1320,7 +1317,7 @@ impl Registers {
         (self.processor_status & flag) != 0
     }
 
-    fn set_flag(&mut self, flag: u8, value: bool) {
+    pub fn set_flag(&mut self, flag: u8, value: bool) {
         if value {
             self.processor_status |= flag;
         } else {

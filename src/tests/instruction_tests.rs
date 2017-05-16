@@ -2295,4 +2295,20 @@ mod tests {
 
         assert!(cpu.registers.program_counter == 0x0104);
     }
+
+    // BNE
+
+    #[test]
+    fn test_bne() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xd0);
+        cpu.memory.store(0x0101, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.program_counter == 0x0104);
+    }
 }
