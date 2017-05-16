@@ -2485,4 +2485,24 @@ mod tests {
         assert!(cpu.pull_word() == 0x0102);
         assert!(cpu.registers.program_counter == 0x01ff);
     }
+
+    // RTI
+
+    #[test]
+    fn test_rti() {
+        let mut cpu = Cpu::new();
+
+        cpu.reset();
+
+        cpu.registers.program_counter = 0x0100;
+        cpu.push_word(0x0102);
+        cpu.push(0x03);
+
+        cpu.memory.store(0x0100, 0x40);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.processor_status == 0x23);
+        assert!(cpu.registers.program_counter == 0x0102);
+    }
 }
