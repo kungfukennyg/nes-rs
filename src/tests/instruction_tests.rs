@@ -2210,4 +2210,22 @@ mod tests {
 
         assert!(cpu.memory.fetch(0x01fc) == 0x02);
     }
+
+    // RTS
+
+    #[test]
+    fn test_rts() {
+        let mut cpu = Cpu::new();
+
+        cpu.reset();
+
+        cpu.registers.program_counter = 0x0100;
+        cpu.push_word(0x0102);
+
+        cpu.memory.store(0x0100, 0x60);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.program_counter == 0x0103);
+    }
 }
