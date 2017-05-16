@@ -2408,4 +2408,28 @@ mod tests {
 
         assert!(!cpu.registers.get_flag(cpu::INTERRUPT_FLAG));
     }
+
+    // CLV
+
+    #[test]
+    fn test_clv() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xb8);
+
+        cpu.execute_instruction();
+
+        assert!(!cpu.registers.get_flag(cpu::OVERFLOW_FLAG));
+
+        cpu.registers.processor_status |= cpu::OVERFLOW_FLAG;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0xb8);
+
+        cpu.execute_instruction();
+
+        assert!(!cpu.registers.get_flag(cpu::OVERFLOW_FLAG));
+    }
 }
