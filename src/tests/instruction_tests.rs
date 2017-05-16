@@ -2360,4 +2360,28 @@ mod tests {
 
         assert!(cpu.registers.program_counter == 0x0104);
     }
+
+    // CLC
+
+    #[test]
+    fn test_clc() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x18);
+
+        cpu.execute_instruction();
+
+        assert!(!cpu.registers.get_flag(cpu::CARRY_BIT));
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x18);
+
+        cpu.execute_instruction();
+
+        assert!(!cpu.registers.get_flag(cpu::CARRY_BIT))
+    }
 }
