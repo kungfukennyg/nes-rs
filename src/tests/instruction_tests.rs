@@ -2311,4 +2311,20 @@ mod tests {
 
         assert!(cpu.registers.program_counter == 0x0104);
     }
+
+    // BPL
+
+    #[test]
+    fn test_bpl() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x10);
+        cpu.memory.store(0x0101, 0x02);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.registers.program_counter == 0x0104);
+    }
 }
