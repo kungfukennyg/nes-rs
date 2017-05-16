@@ -2243,11 +2243,18 @@ mod tests {
         cpu.execute_instruction();
 
         assert!(cpu.registers.program_counter == 0x0102);
+    }
 
-        cpu.registers.processor_status &= cpu::CARRY_BIT;
+    // BCS
+
+    #[test]
+    fn test_bcs() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.processor_status |= cpu::CARRY_BIT;
         cpu.registers.program_counter = 0x0100;
 
-        cpu.memory.store(0x0100, 0x90);
+        cpu.memory.store(0x0100, 0xb0);
         cpu.memory.store(0x0101, 0x02);
 
         cpu.execute_instruction();
