@@ -2462,4 +2462,27 @@ mod tests {
 
         assert!(cpu.registers.get_flag(cpu::INTERRUPT_FLAG));
     }
+
+    // BRK
+
+    #[test]
+    fn test_brk() {
+        let mut cpu = Cpu::new();
+
+        cpu.reset();
+
+        cpu.registers.processor_status = 0xff;
+        cpu.registers.processor_status ^= cpu::BREAK_FLAG;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x00);
+        cpu.memory.store(0xfffe, 0xff);
+        cpu.memory.store(0xffff, 0x01);
+
+        cpu.execute_instruction();
+
+        assert!(cpu.pull() == 0xff);
+        assert!(cpu.pull_word() == 0x0102);
+        assert!(cpu.registers.program_counter == 0x01ff);
+    }
 }
