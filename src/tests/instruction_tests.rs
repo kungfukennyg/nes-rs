@@ -2384,4 +2384,28 @@ mod tests {
 
         assert!(!cpu.registers.get_flag(cpu::CARRY_BIT))
     }
+
+    // CLI
+
+    #[test]
+    fn test_cli() {
+        let mut cpu = Cpu::new();
+
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x58);
+
+        cpu.execute_instruction();
+
+        assert!(!cpu.registers.get_flag(cpu::INTERRUPT_FLAG));
+
+        cpu.registers.processor_status |= cpu::INTERRUPT_FLAG;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.memory.store(0x0100, 0x58);
+
+        cpu.execute_instruction();
+
+        assert!(!cpu.registers.get_flag(cpu::INTERRUPT_FLAG));
+    }
 }
