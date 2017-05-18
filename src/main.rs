@@ -6,8 +6,18 @@ mod nes;
 mod tests;
 
 use nes::cpu::Cpu;
+use nes::rom::Rom;
+
+use std::env;
+use std::path::Path;
+use std::fs::File;
 
 fn main() {
+    let rom_path = env::args().skip(1).next().unwrap();
+    let rom = Rom::load(&mut File::open(&Path::new(&rom_path)).unwrap());
+
+    println!("Rom loaded: {}", rom.header);
+
     let mut cpu = Cpu::new();
     println!("{:?}", cpu);
 

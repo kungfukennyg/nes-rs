@@ -526,7 +526,7 @@ impl Cpu {
         self.cycle += cycles as u64;
     }
 
-    // load byte from memory at given address, setting zero and negative flags as appropriate
+    /// load byte from memory at given address, setting zero and negative flags as appropriate
     fn load(&mut self, address: u16) -> u8 {
         let result = self.memory.fetch(address);
         self.registers.set_zn(result);
@@ -568,7 +568,7 @@ impl Cpu {
         (high << 8) | low
     }
 
-    // resets all registers
+    /// resets all registers
     pub fn reset(&mut self) {
         self.registers.accumulator = 0;
         self.registers.x = 0;
@@ -623,125 +623,125 @@ impl Cpu {
 
     // Instructions
 
-    // Loads a byte into the accumulator register from memory
+    /// Loads a byte into the accumulator register from memory
     fn lda(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.accumulator = result;
     }
-    // Load byte into index x register from memory
+    /// Load byte into index x register from memory
     fn ldx(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.x = result;
     }
-    // Loads a byte into the index y register from memory
+    /// Loads a byte into the index y register from memory
     fn ldy(&mut self, address: u16) {
         let result = self.load(address);
         self.registers.y = result;
     }
-    // Stores a byte in memory from the accumulator registry
+    /// Stores a byte in memory from the accumulator registry
     fn sta(&mut self, address: u16) {
         let a = self.registers.accumulator;
         self.store(address, a);
     }
-    // Stores a byte in memory from the index x register
+    /// Stores a byte in memory from the index x register
     fn stx(&mut self, address: u16) {
         let x = self.registers.x;
         self.store(address, x);
     }
-    // Stores a byte in memory from the index y register
+    /// Stores a byte in memory from the index y register
     fn sty(&mut self, address: u16) {
         let y = self.registers.y;
         self.store(address, y);
     }
-    // Transfers the value of the accumulator registry into the index x registry
+    /// Transfers the value of the accumulator registry into the index x registry
     fn tax(&mut self) {
         let value = self.registers.accumulator;
         self.registers.set_zn(value);
 
         Cpu::transfer(value, &mut self.registers.x);
     }
-    // Transfers the value in the accumulator registry into the index y registry
+    /// Transfers the value in the accumulator registry into the index y registry
     fn tay(&mut self) {
         let value = self.registers.accumulator;
         self.registers.set_zn(value);
 
         Cpu::transfer(value, &mut self.registers.y);
     }
-    // Transfers the value in the index x registry into the accumulator registry
+    /// Transfers the value in the index x registry into the accumulator registry
     fn txa(&mut self) {
         let value = self.registers.x;
         self.registers.set_zn(value);
 
         Cpu::transfer(value, &mut self.registers.accumulator);
     }
-    // Transfers the value in the index y registry into the accumulator registry
+    /// Transfers the value in the index y registry into the accumulator registry
     fn tya(&mut self) {
         let value = self.registers.y;
         self.registers.set_zn(value);
 
         Cpu::transfer(value, &mut self.registers.accumulator);
     }
-    // Transfers the value in the stack pointer registry into the index x registry
+    /// Transfers the value in the stack pointer registry into the index x registry
     fn tsx(&mut self) {
         let value = self.registers.stack_pointer;
         self.registers.set_zn(value);
 
         Cpu::transfer(value, &mut self.registers.x);
     }
-    // Transfers the value in the index x registry into the stack pointer registry
+    /// Transfers the value in the index x registry into the stack pointer registry
     fn txs(&mut self) {
         let value = self.registers.x;
         self.registers.set_zn(value);
 
         Cpu::transfer(value, &mut self.registers.stack_pointer);
     }
-    // Pushes the value of the accumulator registry onto the stack
+    /// Pushes the value of the accumulator registry onto the stack
     fn pha(&mut self) {
         let a = self.registers.accumulator;
 
         self.push(a);
     }
-    // Pushes status flags onto the stack
+    /// Pushes status flags onto the stack
     fn php(&mut self) {
         let mut flags = self.registers.processor_status;
         self.push(flags | BREAK_FLAG);
     }
-    // Loads a byte from the stack into the accumulator registry
+    /// Loads a byte from the stack into the accumulator registry
     fn pla(&mut self) {
         let value = self.pull();
         self.registers.set_zn(value);
         self.registers.accumulator = value;
     }
-    // Pulls a byte from the stack and into the processor status registry
+    /// Pulls a byte from the stack and into the processor status registry
     fn plp(&mut self) {
         let value = self.pull();
         self.registers.set_flags(value);
     }
-    // Performs a logical AND on a byte from memory and the accumulator's value, and stores the
-    // result in the accumulator
+    /// Performs a logical AND on a byte from memory and the accumulator's value, and stores the
+    /// result in the accumulator
     fn and(&mut self, address: u16) {
         let value = self.memory.fetch(address);
 
         self.registers.set_zn(value);
         self.registers.accumulator &= value;
     }
-    // Performs an exclusive OR on a byte of memory and the accumulator's value, and stores the
-    // result in the accumulator
+    /// Performs an exclusive OR on a byte of memory and the accumulator's value, and stores the
+    /// result in the accumulator
     fn eor(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         self.registers.set_zn(value);
         self.registers.accumulator ^= value;
     }
-    // Performs an inclusive OR on a byte of memory and the accumulator's value, and stores the
-    // result in the accumulator
+    /// Performs an inclusive OR on a byte of memory and the accumulator's value, and stores the
+    /// result in the accumulator
     fn ora(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         self.registers.set_zn(value);
         self.registers.accumulator |= value;
     }
-    // Tests if one or more bits is set in the supplied memory location. The accumulator's value
-    // is ANDed with the value in memory to set the zero flag, and the value in memory's 6th
-    // and 7th bits are used to set the negative and overflow flag respectively.
+    /// Tests if one or more bits is set in the supplied memory location. The accumulator's value
+    /// is ANDed with the value in memory to set the zero flag, and the value in memory's 6th
+    /// and 7th bits are used to set the negative and overflow flag respectively.
     fn bit(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         let a = self.registers.accumulator;
@@ -749,66 +749,66 @@ impl Cpu {
         self.registers.set_flag(NEGATIVE_FLAG, (value & 0x80) != 0);
         self.registers.set_flag(OVERFLOW_FLAG, (value & 0x40) != 0);
     }
-    // Shifts the contents of memory at the given address left. Effectively multiplies memory
-    // contents by two (ignoring two's complement), and sets the carry bit if the result will
-    // not fit in 8 bits.
+    /// Shifts the contents of memory at the given address left. Effectively multiplies memory
+    /// contents by two (ignoring two's complement), and sets the carry bit if the result will
+    /// not fit in 8 bits.
     fn asl(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         let result = self.shift_left(value, false);
         self.memory.store(address, result);
     }
-    // Shifts the contents of the accumulator registry to the left (see fn asl())
+    /// Shifts the contents of the accumulator registry to the left (see fn asl())
     fn asl_accumulator(&mut self) {
         let a = self.registers.accumulator;
         let result = self.shift_left(a, false);
         Cpu::transfer(result, &mut self.registers.accumulator);
     }
-    // Shifts the contents of memory at the given address right.
+    /// Shifts the contents of memory at the given address right.
     fn lsr(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         let result = self.shift_right(value, false);
         self.memory.store(address, result);
     }
-    // Shifts the contents of the accumulator registry to the right (see fn lsr())
+    /// Shifts the contents of the accumulator registry to the right (see fn lsr())
     fn lsr_accumulator(&mut self) {
         let value = self.registers.accumulator;
         let result = self.shift_right(value, false);
         Cpu::transfer(result, &mut self.registers.accumulator);
     }
-    // Shifts the contents of memory at the supplied address to the left, setting bit 0 with the
-    // current carry flag.
+    /// Shifts the contents of memory at the supplied address to the left, setting bit 0 with the
+    /// current carry flag.
     fn rol(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         let carry = self.registers.get_flag(CARRY_FLAG);
         let result = self.shift_left(value, carry);
         self.memory.store(address, result);
     }
-    // Shift the contents of the accumulator registry to the left, setting bit 0 with the current
-    // carry flag.
+    /// Shift the contents of the accumulator registry to the left, setting bit 0 with the current
+    /// carry flag.
     fn rol_accumulator(&mut self) {
         let a = self.registers.accumulator;
         let carry = self.registers.get_flag(CARRY_FLAG);
         let result = self.shift_left(a, carry);
         Cpu::transfer(result, &mut self.registers.accumulator);
     }
-    // Shifts the contents of memory at the supplied address to the right, setting bit 7 with the
-    // current carry flag.
+    /// Shifts the contents of memory at the supplied address to the right, setting bit 7 with the
+    /// current carry flag.
     fn ror(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         let carry = self.registers.get_flag(CARRY_FLAG);
         let result = self.shift_right(value, carry);
         self.memory.store(address, result);
     }
-    // Shifts the contents of the accumulator registry to the right, setting bit 7 with the current
-    // carry flag.
+    /// Shifts the contents of the accumulator registry to the right, setting bit 7 with the current
+    /// carry flag.
     fn ror_accumulator(&mut self) {
         let a = self.registers.accumulator;
         let carry = self.registers.get_flag(CARRY_FLAG);
         let result = self.shift_right(a, carry);
         Cpu::transfer(result, &mut self.registers.accumulator);
     }
-    // Adds the contents of memory at the given address to the value of the accumulator, setting
-    // the carry bit if an overflow occurs.
+    /// Adds the contents of memory at the given address to the value of the accumulator, setting
+    /// the carry bit if an overflow occurs.
     fn adc(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         let mut result = self.registers.accumulator as u32 + value as u32;
@@ -825,8 +825,8 @@ impl Cpu {
         self.registers.set_zn(result);
         self.registers.accumulator = result;
     }
-    // Subtracts the contents of memory at the given address from the value of the accumulator,
-    // clearing the carry if overflow occurs.
+    /// Subtracts the contents of memory at the given address from the value of the accumulator,
+    /// clearing the carry if overflow occurs.
     fn sbc(&mut self, address: u16) {
         let value = self.memory.fetch(address);
         let a = self.registers.accumulator;
@@ -843,85 +843,85 @@ impl Cpu {
         self.registers.set_zn(result);
         self.registers.accumulator = result;
     }
-    // Decreases the value of the given address in memory by one
+    /// Decreases the value of the given address in memory by one
     fn dec(&mut self, address: u16) {
         let value = self.memory.fetch(address) - 1;
         self.registers.set_zn(value);
         self.memory.store(address, value);
     }
-    // Decreases the value of the index x registry by one
+    /// Decreases the value of the index x registry by one
     fn dex(&mut self) {
         let value = self.registers.x - 1;
         self.registers.set_zn(value);
         Cpu::transfer(value, &mut self.registers.x);
     }
-    // Decreases the value of the index y registry by one
+    /// Decreases the value of the index y registry by one
     fn dey(&mut self) {
         let value = self.registers.y - 1;
         self.registers.set_zn(value);
         Cpu::transfer(value, &mut self.registers.y);
     }
-    // Adds one to the value of memory at the given address, and stores at the address.
+    /// Adds one to the value of memory at the given address, and stores at the address.
     fn inc(&mut self, address: u16) {
         let value = self.memory.fetch(address) + 1;
         self.registers.set_zn(value);
         self.memory.store(address, value);
     }
-    // Adds one to the value of the index x registry
+    /// Adds one to the value of the index x registry
     fn inx(&mut self) {
         let value = self.registers.x + 1;
         self.registers.set_zn(value);
         Cpu::transfer(value, &mut self.registers.x);
     }
-    // Adds one to the value of the index y registry
+    /// Adds one to the value of the index y registry
     fn iny(&mut self) {
         let value = self.registers.y + 1;
         self.registers.set_zn(value);
         Cpu::transfer(value, &mut self.registers.y);
     }
-    // Sets the carry flag to zero
+    /// Sets the carry flag to zero
     fn clc(&mut self) {
         self.registers.set_flag(CARRY_FLAG, false);
     }
-    // Sets the interrupt disable flag to zero
+    /// Sets the interrupt disable flag to zero
     fn cli(&mut self) {
         self.registers.set_flag(INTERRUPT_FLAG, false);
     }
-    // Sets the overflow flag to zero
+    /// Sets the overflow flag to zero
     fn clv(&mut self) {
         self.registers.set_flag(OVERFLOW_FLAG, false);
     }
-    // Sets the carry flag to one
+    /// Sets the carry flag to one
     fn sec(&mut self) {
         self.registers.set_flag(CARRY_FLAG, true);
     }
-    // Sets the interrupt disable flag to one
+    /// Sets the interrupt disable flag to one
     fn sei(&mut self) {
         self.registers.set_flag(INTERRUPT_FLAG, true);
     }
-    // Compares the contents of the accumulator with a value in memory, setting zero and negative
-    // flags as appropriate
+    /// Compares the contents of the accumulator with a value in memory, setting zero and negative
+    /// flags as appropriate
     fn cmp(&mut self, address: u16) {
         let a = self.registers.accumulator;
         let value = self.memory.fetch(address);
         self.compare(a, value);
     }
-    // Compares the contents of the index x registry with a value in memory, setting zero and
-    // negative flags as appropriate
+    /// Compares the contents of the index x registry with a value in memory, setting zero and
+    /// negative flags as appropriate
     fn cpx(&mut self, address: u16) {
         let x = self.registers.x;
         let value = self.memory.fetch(address);
         self.compare(x, value);
     }
-    // Compares the contents of the index x registry with a value in memory, setting zero and
-    // negative flags as appropriate
+    /// Compares the contents of the index x registry with a value in memory, setting zero and
+    /// negative flags as appropriate
     fn cpy(&mut self, address: u16) {
         let y = self.registers.y;
         let value = self.memory.fetch(address);
         self.compare(y, value);
     }
-    // Adds the supplied address to the program counter (causing a branch to a new location) if the
-    // carry flag is not set
+    /// Adds the supplied address to the program counter (causing a branch to a new location) if the
+    /// carry flag is not set
     fn bcc(&mut self, address: u16) -> u8 {
         if !self.registers.get_flag(CARRY_FLAG) {
             self.branch(address)
@@ -929,8 +929,8 @@ impl Cpu {
             0
         }
     }
-    // Adds the supplied address to the program counter (causing a branch to a new location) if the
-    // carry flag is set
+    /// Adds the supplied address to the program counter (causing a branch to a new location) if the
+    /// carry flag is set
     fn bcs(&mut self, address: u16) -> u8 {
         if self.registers.get_flag(CARRY_FLAG) {
             self.branch(address)
@@ -938,8 +938,8 @@ impl Cpu {
             0
         }
     }
-    // Adds the supplied address to the program counter (causing a branch to a new location) if the
-    // zero flag is set
+    /// Adds the supplied address to the program counter (causing a branch to a new location) if the
+    /// zero flag is set
     fn beq(&mut self, address: u16) -> u8 {
         if self.registers.get_flag(ZERO_FLAG) {
             self.branch(address)
@@ -947,8 +947,8 @@ impl Cpu {
             0
         }
     }
-    // Adds the supplied address to the program counter (causing a branch to a new location) if the
-    // negative flag is set
+    /// Adds the supplied address to the program counter (causing a branch to a new location) if the
+    /// negative flag is set
     fn bmi(&mut self, address: u16) -> u8 {
         if self.registers.get_flag(NEGATIVE_FLAG) {
             self.branch(address)
@@ -956,8 +956,8 @@ impl Cpu {
             0
         }
     }
-    // Adds the supplied address to the program counter (causing a branch to a new location) if the
-    // zero flag is not set
+    /// Adds the supplied address to the program counter (causing a branch to a new location) if the
+    /// zero flag is not set
     fn bne(&mut self, address: u16) -> u8 {
         if !self.registers.get_flag(ZERO_FLAG) {
             self.branch(address)
@@ -965,8 +965,8 @@ impl Cpu {
             0
         }
     }
-    // Adds the supplied address to the program counter (causing a branch to a new location) if the
-    // negative flag is not set
+    /// Adds the supplied address to the program counter (causing a branch to a new location) if the
+    /// negative flag is not set
     fn bpl(&mut self, address: u16) -> u8 {
         if !self.registers.get_flag(NEGATIVE_FLAG) {
             self.branch(address)
@@ -976,8 +976,8 @@ impl Cpu {
             0
         }
     }
-    // Adds the supplied address to the program counter (causing a branch to a new location) if the
-    // overflow flag is not set
+    /// Adds the supplied address to the program counter (causing a branch to a new location) if the
+    /// overflow flag is not set
     fn bvc(&mut self, address: u16) -> u8 {
         if !self.registers.get_flag(OVERFLOW_FLAG) {
             self.branch(address)
@@ -985,8 +985,8 @@ impl Cpu {
             0
         }
     }
-    // Adds the supplied address to the program counter (causing a branch to a new location) if the
-    // overflow flag is set
+    /// Adds the supplied address to the program counter (causing a branch to a new location) if the
+    /// overflow flag is set
     fn bvs(&mut self, address: u16) -> u8 {
         if self.registers.get_flag(OVERFLOW_FLAG) {
             self.branch(address)
@@ -994,28 +994,28 @@ impl Cpu {
             0
         }
     }
-    // Sets the program counter to the supplied address
+    /// Sets the program counter to the supplied address
     fn jmp(&mut self, address: u16) {
         self.registers.program_counter = address;
     }
-    //
+    ///
     fn jsr(&mut self, address: u16) {
         let value = self.registers.program_counter - 1;
         self.push_word(value);
         self.registers.program_counter = address;
     }
-    //
+    ///
     fn rts(&mut self) {
         let value = self.pull_word() + 1;
         self.registers.program_counter = value;
     }
-    //
+    ///
     fn rti(&mut self) {
         let flags = self.pull();
         self.registers.set_flags(flags);
         self.registers.program_counter = self.pull_word();
     }
-    //
+    ///
     fn brk(&mut self) {
         let pc = self.registers.program_counter + 1;
         self.push_word(pc);
@@ -1362,17 +1362,17 @@ impl Cpu {
 
 #[derive(Default, Debug)]
 pub struct Registers {
-    // (A) Accumulator, arithmetic/logic instructions
+    /// (A) Accumulator, arithmetic/logic instructions
     pub accumulator: u8,
-    // (X/Y) index registers (used for indirect addressing and counters/indexes)
+    /// (X/Y) index registers (used for indirect addressing and counters/indexes)
     pub x: u8,
     pub y: u8,
-    // (SP) stack pointer (stores least sig bit of top of the stack)
+    /// (SP) stack pointer (stores least sig bit of top of the stack)
     pub stack_pointer: u8,
-    // (PC) program counter (only 16 bit register, points to next instruction to execute)
+    /// (PC) program counter (only 16 bit register, points to next instruction to execute)
     pub program_counter: u16,
-    // (P) processor status (indicate results of last arithmetic and logic instructions,
-    // indicates break/interrupts)
+    /// (P) processor status (indicate results of last arithmetic and logic instructions,
+    /// indicates break/interrupts)
     pub processor_status: u8
 }
 
