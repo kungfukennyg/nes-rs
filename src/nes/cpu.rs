@@ -18,6 +18,9 @@ const BRK_ADDR: u16 = 0xfffe;
 pub struct Cpu {
     pub registers: Registers,
     pub memory: NesMemory,
+    pub nmi: bool,
+    pub irq: bool,
+    pub rst: bool
 }
 
 impl Cpu {
@@ -25,10 +28,16 @@ impl Cpu {
         Cpu {
             registers: Registers::default(),
             memory: NesMemory::new(),
+            nmi: false,
+            irq: false,
+            rst: false
         }
     }
 
     pub fn execute_instruction(&mut self) {
+        // interrupts
+        self.do_interrupts();
+
         let opcode = self.memory.fetch(self.registers.program_counter);
         self.registers.program_counter += 1;
         println!("Loaded opcode: {:x}", opcode);
@@ -1287,6 +1296,64 @@ impl Cpu {
 
         (high_val as u16) << 8 | low_val as u16
     }
+
+    // interrupts
+
+    pub fn interrupt(&mut self, interruptType: Interrupt, state: bool) {
+        match interruptType {
+            Interrupt::Irq => self.irq = state,
+            Interrupt::Nmi => self.nmi = state,
+            Interrupt::Rst => self.rst = state
+        }
+    }
+
+    pub fn get_interrupt(&self, interruptType: Interrupt) -> bool {
+        let result = match interruptType {
+            Interrupt::Irq => self.irq,
+            Interrupt::Nmi => self.nmi,
+            Interrupt::Rst => self.rst
+        };
+        result
+    }
+
+    pub fn do_interrupts(&mut self)
+    {
+        if self.irq && !self.registers.get_flag(INTERRUPT_FLAG) {
+            self.do_irq();
+            self.irq = false;
+        } else if self.nmi {
+            self.do_nmi();
+            self.nmi = false;
+        } else if self.rst {
+            self.do_rst();
+            self.rst = false;
+        }
+    }
+
+    fn do_irq(&mut self) {
+        let pc = self.registers.program_counter;
+        self.push_word(pc);
+        let status = self.registers.processor_status;
+        self.push(status);
+
+        let addr = self.load_word(0xffff_fffe);
+        self.registers.program_counter = addr;
+    }
+
+    fn do_nmi(&mut self) {
+        let pc = self.registers.program_counter;
+        self.push_word(pc);
+        let status = self.registers.processor_status;
+        self.push(status);
+
+        let addr = self.load_word(0xfffb_fffa);
+        self.registers.program_counter = addr;
+    }
+
+    fn do_rst(&mut self) {
+        let addr = self.load_word(0xfffd_fffc);
+        self.registers.program_counter = addr;
+    }
 }
 
 #[derive(Default, Debug)]
@@ -1340,4 +1407,11 @@ impl Registers {
 enum Index {
     X,
     Y
+}
+
+#[derive(Debug)]
+pub enum Interrupt {
+    Irq,
+    Nmi,
+    Rst
 }

@@ -3,6 +3,7 @@ mod tests {
     use super::*;
     use nes::cpu;
     use nes::cpu::Cpu;
+    use nes::cpu::Interrupt;
     use nes::memory::Memory;
     use nes::memory::NesMemory;
 
@@ -2508,5 +2509,51 @@ mod tests {
 
         assert!(cpu.registers.processor_status == 0x23);
         assert!(cpu.registers.program_counter == 0x0102);
+    }
+
+    // IRQ
+
+    #[test]
+    fn test_irq() {
+        let mut cpu = Cpu::new();
+
+        cpu.reset();
+
+        cpu.registers.processor_status = 0xfb;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.interrupt(Interrupt::Irq, true);
+        cpu.memory.store(0xfffe, 0x40);
+        cpu.memory.store(0xffff, 0x01);
+
+        cpu.do_interrupts();
+
+        assert!(cpu.pull() == 0xfb);
+        assert!(cpu.pull_word() == 0x0100);
+        assert!(cpu.registers.program_counter == 0x0140);
+        assert!(!cpu.get_interrupt(Interrupt::Irq))
+    }
+
+    // NMI
+
+    #[test]
+    fn test_nmi() {
+        let mut cpu = Cpu::new();
+
+        cpu.reset();
+
+        cpu.registers.processor_status = 0xff;
+        cpu.registers.program_counter = 0x0100;
+
+        cpu.interrupt(Interrupt::Nmi, true);
+        cpu.memory.store(0xfffa, 0x40);
+        cpu.memory.store(0xfffb, 0x01);
+
+        cpu.do_interrupts();
+
+        assert!(cpu.pull() == 0xff);
+        assert!(cpu.pull_word() == 0x0100);
+        assert!(cpu.registers.program_counter == 0x0140);
+        assert!(!cpu.get_interrupt(Interrupt::Nmi));
     }
 }
