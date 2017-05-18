@@ -20,7 +20,8 @@ pub struct Cpu {
     pub memory: NesMemory,
     pub nmi: bool,
     pub irq: bool,
-    pub rst: bool
+    pub rst: bool,
+    pub cycle: u64
 }
 
 impl Cpu {
@@ -30,7 +31,8 @@ impl Cpu {
             memory: NesMemory::new(),
             nmi: false,
             irq: false,
-            rst: false
+            rst: false,
+            cycle: 0
         }
     }
 
@@ -520,6 +522,8 @@ impl Cpu {
 
             _ => panic!("Unrecognized opcode {:?}", opcode)
         }
+
+        self.cycle += cycles as u64;
     }
 
     // load byte from memory at given address, setting zero and negative flags as appropriate

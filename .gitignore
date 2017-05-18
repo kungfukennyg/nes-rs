@@ -1,3 +1,1 @@
-/target
-nes-rs.iml
-.idea/
+Cargo.lock
