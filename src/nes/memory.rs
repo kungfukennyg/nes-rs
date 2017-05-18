@@ -41,7 +41,10 @@ impl Memory for NesMemory {
         old
     }
 
-    // returns true if two addresses' higher bits are the same
+    /// returns true if two addresses' higher bits are the same
+    /// , aka if they are located in the same page in memory.
+    /// i.e. 0x0101 and 0x0103 are on the same page,
+    /// but 0x0101 0x0202 are not.
     fn is_same_page(address1: u16, address2: u16) -> bool {
         (address1 ^ address2) >> 8 == 0
     }

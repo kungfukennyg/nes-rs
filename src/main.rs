@@ -11,10 +11,11 @@ use nes::rom::Rom;
 use std::env;
 use std::path::Path;
 use std::fs::File;
+use std::boxed::Box;
 
 fn main() {
     let rom_path = env::args().skip(1).next().unwrap();
-    let rom = Rom::load(&mut File::open(&Path::new(&rom_path)).unwrap());
+    let rom = Box::new(Rom::load(&mut File::open(&Path::new(&rom_path)).unwrap()));
 
     println!("Rom loaded: {}", rom.header);
 
@@ -27,6 +28,6 @@ fn main() {
     let mut frame = 0;
 
     loop {
-        cpu.execute_instruction();
+       // cpu.execute_instruction();
     }
 }
