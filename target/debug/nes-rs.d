@@ -1,1 +1,0 @@
-/home/kenny/Projects/nes-rs/target/debug/nes-rs: /home/kenny/Projects/nes-rs/src/nes/memory.rs /home/kenny/Projects/nes-rs/src/nes/rom.rs /home/kenny/Projects/nes-rs/src/nes/mod.rs /home/kenny/Projects/nes-rs/src/tests/instruction_tests.rs /home/kenny/Projects/nes-rs/src/nes/cpu.rs /home/kenny/Projects/nes-rs/src/main.rs /home/kenny/Projects/nes-rs/src/tests/mod.rs
