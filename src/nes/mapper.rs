@@ -7,13 +7,23 @@ pub enum MapperResult {
 }
 
 pub trait Mapper {
-    fn prg_load(&mut self, addr: u16) -> u8;
+    fn prg_load(&self, addr: u16) -> u8;
     fn prg_store(&mut self, addr: u16, val: u8);
     fn chr_load(&mut self, addr: u16) -> u8;
     fn chr_store(&mut self, addr: u16, val: u8);
     fn next_scanline(&mut self) -> MapperResult;
 }
 
+
+pub fn create_mapper(rom: Box<Rom>) -> Box<Mapper> {
+    let mapper_id = rom.header.nes_mapper();
+    println!("mapper id: {}", mapper_id);
+    match mapper_id {
+        0 => Box::new(Nrom { rom }) as Box<Mapper>,
+        1 => Box::new(SxRom::new(rom)) as Box<Mapper>,
+        _ => panic!("unsupported mapper of id {}", mapper_id)
+    }
+}
 
 /// Mapper 0 (NROM)
 ///
@@ -23,7 +33,7 @@ pub struct Nrom {
 }
 
 impl Mapper for Nrom {
-    fn prg_load(&mut self, addr: u16) -> u8 {
+    fn prg_load(&self, addr: u16) -> u8 {
         if addr < 0x8000 {
             0u8
         } else if self.rom.prg.len() > 16384 {
@@ -108,7 +118,7 @@ pub struct SxRom {
 impl SxRom {
     fn new(rom: Box<Rom>) -> SxRom {
         SxRom {
-            rom: rom,
+            rom,
             regs: SxRegs {
                 ctrl: SxCtrl {
                     val: 3 << 2,
@@ -125,7 +135,7 @@ impl SxRom {
 }
 
 impl Mapper for SxRom {
-    fn prg_load(&mut self, addr: u16) -> u8 {
+    fn prg_load(&self, addr: u16) -> u8 {
         if addr < 0x8000 {
             0u8
         } else if addr < 0xc000 {

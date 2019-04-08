@@ -1,6 +1,7 @@
-use std::io::{self, Read};
+use std::io::Read;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Rom {
     pub header: NesHeader,
     /// PRG-ROM
@@ -45,7 +46,7 @@ impl Rom {
         read_to_buf(&mut chr_rom, r);
 
         Rom {
-            header: header,
+            header,
             prg: prg_rom,
             chr: chr_rom,
         }
@@ -64,6 +65,7 @@ fn read_to_buf(mut buf: &mut [u8], rd: &mut Read) {
     }
 }
 
+#[derive(Debug)]
 pub struct NesHeader {
     /// 'N' 'E' 'S' '\x1a'
     pub magic: [u8; 4],

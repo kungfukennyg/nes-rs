@@ -1,22 +1,28 @@
 use std::fmt;
+use nes::rom::Rom;
+use core::borrow::{Borrow, BorrowMut};
+use nes::mapper::{create_mapper, Mapper};
 
-const DEFAULT_MEMORY_SIZE: u32 = 65536;
+const DEFAULT_MEMORY_SIZE: u32 = 65536; // change to 2048;
 
 pub trait Memory {
     fn reset(&mut self);
-    fn fetch(&self, address: u16) -> u8;
-    fn store(&mut self, address: u16, value: u8) -> u8;
+    fn load(&self, address: u16) -> u8;
+    fn store(&mut self, address: u16, value: u8);
     fn is_same_page(address1: u16, address2: u16) -> bool;
 }
 
 pub struct NesMemory {
-    memory: [u8; DEFAULT_MEMORY_SIZE as usize]
+    memory: [u8; DEFAULT_MEMORY_SIZE as usize],
+    mapper: Box<Mapper>,
 }
 
 impl NesMemory {
-    pub fn new() -> Self {
+    pub fn new(rom: Box<Rom>) -> Self {
+        let mapper = create_mapper(rom);
         NesMemory {
-            memory: [0; DEFAULT_MEMORY_SIZE as usize]
+            memory: [0; DEFAULT_MEMORY_SIZE as usize],
+            mapper
         }
     }
 }
@@ -30,15 +36,47 @@ impl Memory for NesMemory {
     }
 
     // retrieve value from memory at address
-    fn fetch(&self, address: u16) -> u8 {
-        self.memory[address as usize]
+    fn load(&self, address: u16) -> u8 {
+        if address < 0x2000 {
+            self.memory[address as usize]
+        } else if address < 0x4000 {
+            // ppu
+            self.memory[address as usize]
+        } else if address == 0x4016 {
+            // input
+            self.memory[address as usize]
+        } else if address <= 0x4018 {
+            // apu
+            self.memory[address as usize]
+        } else if address < 0x6000 {
+            // some mappers?
+            self.memory[address as usize]
+        } else {
+            let mapper: &Mapper = self.mapper.borrow();
+            mapper.prg_load(address)
+        }
     }
 
     // stores value in the given address and returns the previous value
-    fn store(&mut self, address: u16, value: u8) -> u8 {
-        let old = self.fetch(address);
-        self.memory[address as usize] = value;
-        old
+    fn store(&mut self, address: u16, value: u8) {
+        if address < 0x2000 {
+            self.memory[address as usize] = value;
+        } else if address < 0x4000 {
+            // ppu
+
+        } else if address == 0x4016 {
+            // input
+
+        } else if address <= 0x4018 {
+            // apu
+
+        } else if address < 0x6000 {
+            // some mappers?
+
+        } else {
+            let mut mapper: &mut Mapper = self.mapper.borrow_mut();
+            mapper.prg_store(address, value);
+        }
     }
 
     /// returns true if two addresses' higher bits are the same

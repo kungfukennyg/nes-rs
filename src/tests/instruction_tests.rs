@@ -308,7 +308,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0xff);
+        assert!(cpu.memory.load(0x0084) == 0xff);
     }
 
     #[test]
@@ -324,7 +324,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0xff);
+        assert!(cpu.memory.load(0x0085) == 0xff);
     }
 
     #[test]
@@ -340,7 +340,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0xff);
+        assert!(cpu.memory.load(0x0084) == 0xff);
     }
 
     #[test]
@@ -357,7 +357,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0xff);
+        assert!(cpu.memory.load(0x0085) == 0xff);
     }
 
     #[test]
@@ -374,7 +374,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0xff);
+        assert!(cpu.memory.load(0x0085) == 0xff);
     }
 
     #[test]
@@ -392,7 +392,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0087) == 0xff);
+        assert!(cpu.memory.load(0x0087) == 0xff);
     }
 
     #[test]
@@ -410,7 +410,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0087) == 0xff);
+        assert!(cpu.memory.load(0x0087) == 0xff);
     }
 
     // STX
@@ -427,7 +427,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0xff);
+        assert!(cpu.memory.load(0x0084) == 0xff);
     }
 
     #[test]
@@ -443,7 +443,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0xff);
+        assert!(cpu.memory.load(0x0085) == 0xff);
     }
 
     #[test]
@@ -459,7 +459,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0xff);
+        assert!(cpu.memory.load(0x0084) == 0xff);
     }
 
     // STY
@@ -476,7 +476,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0xff);
+        assert!(cpu.memory.load(0x0084) == 0xff);
     }
 
     #[test]
@@ -492,7 +492,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0xff);
+        assert!(cpu.memory.load(0x0085) == 0xff);
     }
 
     #[test]
@@ -508,7 +508,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0xff);
+        assert!(cpu.memory.load(0x0084) == 0xff);
     }
 
     // TAX
@@ -624,7 +624,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.pull() == 0xff);
+        assert!(cpu.pop() == 0xff);
     }
 
     // PHP
@@ -643,7 +643,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.pull() == 0xff);
+        assert!(cpu.pop() == 0xff);
     }
 
     // PLA
@@ -1649,7 +1649,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0xff);
+        assert!(cpu.memory.load(0x0084) == 0xff);
     }
 
     #[test]
@@ -1665,7 +1665,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0xff);
+        assert!(cpu.memory.load(0x0085) == 0xff);
     }
 
     #[test]
@@ -1681,7 +1681,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0xff);
+        assert!(cpu.memory.load(0x0084) == 0xff);
     }
 
     #[test]
@@ -1698,7 +1698,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0xff);
+        assert!(cpu.memory.load(0x0085) == 0xff);
     }
 
     // INX
@@ -1745,7 +1745,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x01);
+        assert!(cpu.memory.load(0x0084) == 0x01);
     }
 
     #[test]
@@ -1761,7 +1761,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x01);
+        assert!(cpu.memory.load(0x0085) == 0x01);
     }
 
     #[test]
@@ -1777,7 +1777,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x01);
+        assert!(cpu.memory.load(0x0084) == 0x01);
     }
 
     #[test]
@@ -1794,7 +1794,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x01);
+        assert!(cpu.memory.load(0x0085) == 0x01);
     }
 
     // DEX
@@ -1858,7 +1858,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x04);
+        assert!(cpu.memory.load(0x0084) == 0x04);
     }
 
     #[test]
@@ -1874,7 +1874,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x04);
+        assert!(cpu.memory.load(0x0085) == 0x04);
     }
 
     #[test]
@@ -1890,7 +1890,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x04);
+        assert!(cpu.memory.load(0x0084) == 0x04);
     }
 
     #[test]
@@ -1907,7 +1907,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x04);
+        assert!(cpu.memory.load(0x0085) == 0x04);
     }
 
     // LSR
@@ -1938,7 +1938,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x01);
+        assert!(cpu.memory.load(0x0084) == 0x01);
     }
 
     #[test]
@@ -1954,7 +1954,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x01);
+        assert!(cpu.memory.load(0x0085) == 0x01);
     }
 
     #[test]
@@ -1970,7 +1970,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x01);
+        assert!(cpu.memory.load(0x0084) == 0x01);
     }
 
     #[test]
@@ -1987,7 +1987,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x01);
+        assert!(cpu.memory.load(0x0085) == 0x01);
     }
 
     // ROL
@@ -2020,7 +2020,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x05);
+        assert!(cpu.memory.load(0x0084) == 0x05);
     }
 
     #[test]
@@ -2037,7 +2037,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x05);
+        assert!(cpu.memory.load(0x0085) == 0x05);
     }
 
     #[test]
@@ -2053,7 +2053,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x05);
+        assert!(cpu.memory.load(0x0084) == 0x05);
     }
 
     #[test]
@@ -2071,7 +2071,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x05);
+        assert!(cpu.memory.load(0x0085) == 0x05);
     }
 
     // ROR
@@ -2104,7 +2104,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x84);
+        assert!(cpu.memory.load(0x0084) == 0x84);
     }
 
     #[test]
@@ -2121,7 +2121,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x84);
+        assert!(cpu.memory.load(0x0085) == 0x84);
     }
 
     #[test]
@@ -2138,7 +2138,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0084) == 0x84);
+        assert!(cpu.memory.load(0x0084) == 0x84);
     }
 
     #[test]
@@ -2156,7 +2156,7 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.memory.fetch(0x0085) == 0x84);
+        assert!(cpu.memory.load(0x0085) == 0x84);
     }
 
     // JMP
@@ -2211,9 +2211,9 @@ mod tests {
 
         assert!(cpu.registers.program_counter == 0x01ff);
 
-        assert!(cpu.memory.fetch(0x01fd) == 0x01);
+        assert!(cpu.memory.load(0x01fd) == 0x01);
 
-        assert!(cpu.memory.fetch(0x01fc) == 0x02);
+        assert!(cpu.memory.load(0x01fc) == 0x02);
     }
 
     // RTS
@@ -2486,8 +2486,8 @@ mod tests {
 
         cpu.execute_instruction();
 
-        assert!(cpu.pull() == 0xff);
-        assert!(cpu.pull_word() == 0x0102);
+        assert!(cpu.pop() == 0xff);
+        assert!(cpu.pop_word() == 0x0102);
         assert!(cpu.registers.program_counter == 0x01ff);
     }
 
@@ -2528,8 +2528,8 @@ mod tests {
 
         cpu.do_interrupts();
 
-        assert!(cpu.pull() == 0xfb);
-        assert!(cpu.pull_word() == 0x0100);
+        assert!(cpu.pop() == 0xfb);
+        assert!(cpu.pop_word() == 0x0100);
         assert!(cpu.registers.program_counter == 0x0140);
         assert!(!cpu.get_interrupt(Interrupt::Irq))
     }
@@ -2551,8 +2551,8 @@ mod tests {
 
         cpu.do_interrupts();
 
-        assert!(cpu.pull() == 0xff);
-        assert!(cpu.pull_word() == 0x0100);
+        assert!(cpu.pop() == 0xff);
+        assert!(cpu.pop_word() == 0x0100);
         assert!(cpu.registers.program_counter == 0x0140);
         assert!(!cpu.get_interrupt(Interrupt::Nmi));
     }
